@@ -386,6 +386,32 @@ table.ledger-table {
   padding: 18px !important;
 }
 
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 4px 0 24px;
+}
+
+.pager-btn {
+  background: #fff;
+  border: 1px solid var(--paper-line);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 4px;
+}
+.pager-btn:hover:not(:disabled) { border-color: var(--brass); color: var(--brass); }
+.pager-btn:disabled { opacity: 0.4; cursor: default; }
+
+.pager-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
 .entry-form {
   border-top: 1px dashed var(--paper-line);
   padding-top: 22px;

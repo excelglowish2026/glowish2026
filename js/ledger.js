@@ -1,11 +1,14 @@
 (() => {
   const panel = document.getElementById('panel-ledger');
   const tbody = document.getElementById('ledger-tbody');
+  const pagerEl = document.getElementById('pager-ledger');
   const form = document.getElementById('ledger-form');
   const status = document.getElementById('ledger-status');
   const refreshBtn = document.getElementById('ledger-refresh');
 
   let loaded = false;
+  let allRows = [];
+  let currentPage = 1;
 
   panel.addEventListener('panel:show', () => {
     initStoreField(form.store);
@@ -20,7 +23,9 @@
       const storeFilter = SESSION.allStores ? '' : SESSION.store;
       const res = await apiGet({ action: 'getData', sheet: 'Ledger', store: storeFilter, region: SESSION.region });
       if (!res.success) throw new Error(res.error);
-      render(res.rows);
+      allRows = res.rows;
+      currentPage = 1;
+      render();
       setStatus('');
       loaded = true;
     } catch (err) {
@@ -28,12 +33,14 @@
     }
   }
 
-  function render(rows) {
-    if (!rows.length) {
+  function render() {
+    if (!allRows.length) {
       tbody.innerHTML = '<tr><td colspan="8" class="empty-row">No entries yet. Add the first one below.</td></tr>';
+      pagerEl.hidden = true;
       return;
     }
-    tbody.innerHTML = rows.map((r) => `
+    const pageRows = pageSlice(allRows, currentPage);
+    tbody.innerHTML = pageRows.map((r) => `
       <tr>
         <td>${escapeHtml(r.Store)}</td>
         <td>${escapeHtml(r.Location)}</td>
@@ -45,6 +52,7 @@
         <td class="num">${escapeHtml(r.Balance)}</td>
       </tr>
     `).join('');
+    renderPager(pagerEl, allRows.length, currentPage, (p) => { currentPage = p; render(); });
   }
 
   form.addEventListener('submit', async (e) => {

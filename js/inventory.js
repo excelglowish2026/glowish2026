@@ -1,12 +1,14 @@
 (() => {
   const panel = document.getElementById('panel-inventory');
   const tbody = document.getElementById('inventory-tbody');
+  const pagerEl = document.getElementById('pager-inventory');
   const form = document.getElementById('inventory-form');
   const status = document.getElementById('inventory-status');
   const refreshBtn = document.getElementById('inventory-refresh');
   const categoryToggle = document.querySelectorAll('input[name="inventory-category-view"]');
 
   let allRows = [];
+  let currentPage = 1;
   let loaded = false;
 
   panel.addEventListener('panel:show', () => {
@@ -14,7 +16,7 @@
     if (!loaded) load();
   });
   refreshBtn.addEventListener('click', load);
-  categoryToggle.forEach((r) => r.addEventListener('change', () => render(allRows)));
+  categoryToggle.forEach((r) => r.addEventListener('change', () => { currentPage = 1; render(); }));
 
   function currentView() {
     return document.querySelector('input[name="inventory-category-view"]:checked').value;
@@ -28,7 +30,8 @@
       const res = await apiGet({ action: 'getData', sheet: 'Inventory', store: storeFilter, region: SESSION.region });
       if (!res.success) throw new Error(res.error);
       allRows = res.rows;
-      render(allRows);
+      currentPage = 1;
+      render();
       setStatus('');
       loaded = true;
     } catch (err) {
@@ -36,14 +39,16 @@
     }
   }
 
-  function render(rows) {
+  function render() {
     const view = currentView();
-    const filtered = rows.filter((r) => String(r.Category).toLowerCase() === view.toLowerCase());
+    const filtered = allRows.filter((r) => String(r.Category).toLowerCase() === view.toLowerCase());
     if (!filtered.length) {
       tbody.innerHTML = `<tr><td colspan="10" class="empty-row">No ${escapeHtml(view.toLowerCase())} items yet. Add one below.</td></tr>`;
+      pagerEl.hidden = true;
       return;
     }
-    tbody.innerHTML = filtered.map((r) => `
+    const pageRows = pageSlice(filtered, currentPage);
+    tbody.innerHTML = pageRows.map((r) => `
       <tr>
         <td>${escapeHtml(r.Store)}</td>
         <td>${fmtDate(r.Date)}</td>
@@ -57,6 +62,7 @@
         <td>${escapeHtml(r.DeliveredBy)}</td>
       </tr>
     `).join('');
+    renderPager(pagerEl, filtered.length, currentPage, (p) => { currentPage = p; render(); });
   }
 
   form.addEventListener('submit', async (e) => {

@@ -1,11 +1,14 @@
 (() => {
   const panel = document.getElementById('panel-pricelist');
   const tbody = document.getElementById('pricelist-tbody');
+  const pagerEl = document.getElementById('pager-pricelist');
   const form = document.getElementById('pricelist-form');
   const status = document.getElementById('pricelist-status');
   const refreshBtn = document.getElementById('pricelist-refresh');
 
   let loaded = false;
+  let allRows = [];
+  let currentPage = 1;
 
   panel.addEventListener('panel:show', () => {
     initStoreField(form.store);
@@ -20,7 +23,9 @@
       const storeFilter = SESSION.allStores ? '' : SESSION.store;
       const res = await apiGet({ action: 'getData', sheet: 'PriceList', store: storeFilter, region: SESSION.region });
       if (!res.success) throw new Error(res.error);
-      render(res.rows);
+      allRows = res.rows;
+      currentPage = 1;
+      render();
       setStatus('');
       loaded = true;
     } catch (err) {
@@ -28,12 +33,14 @@
     }
   }
 
-  function render(rows) {
-    if (!rows.length) {
+  function render() {
+    if (!allRows.length) {
       tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No items yet. Add the first one below.</td></tr>';
+      pagerEl.hidden = true;
       return;
     }
-    tbody.innerHTML = rows.map((r) => `
+    const pageRows = pageSlice(allRows, currentPage);
+    tbody.innerHTML = pageRows.map((r) => `
       <tr>
         <td>${escapeHtml(r.Store)}</td>
         <td>${escapeHtml(r.Category)}</td>
@@ -43,6 +50,7 @@
         <td class="num">${escapeHtml(r.DistPrice)}</td>
       </tr>
     `).join('');
+    renderPager(pagerEl, allRows.length, currentPage, (p) => { currentPage = p; render(); });
   }
 
   form.addEventListener('submit', async (e) => {

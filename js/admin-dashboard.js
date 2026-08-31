@@ -121,6 +121,7 @@ const TABLE_CONFIGS = {
 };
 
 const searchTerms = { pricelist: '', ledger: '', inventory: '', collectibles: '' };
+const currentPages = { pricelist: 1, ledger: 1, inventory: 1, collectibles: 1 };
 
 document.addEventListener('DOMContentLoaded', () => {
   const raw = sessionStorage.getItem('session');
@@ -157,13 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!input) return;
     input.addEventListener('input', () => {
       searchTerms[key] = input.value.trim().toLowerCase();
+      currentPages[key] = 1;
       renderTable(key);
     });
   });
 
   // Inventory category toggle
   document.querySelectorAll('input[name="admin-inventory-view"]').forEach((r) => {
-    r.addEventListener('change', () => renderTable('inventory'));
+    r.addEventListener('change', () => { currentPages.inventory = 1; renderTable('inventory'); });
   });
 
   loadAllData();
@@ -282,6 +284,7 @@ function renderTable(key) {
   const cfg = TABLE_CONFIGS[key];
   const tbody = document.getElementById(cfg.tbody);
   if (!tbody) return;
+  const pagerEl = document.getElementById('pager-' + key);
 
   let rows = ADMIN_DATA[cfg.sheet] || [];
 
@@ -300,10 +303,15 @@ function renderTable(key) {
 
   if (!rows.length) {
     tbody.innerHTML = `<tr><td colspan="${cfg.colspan}" class="empty-row">${escapeHtml(cfg.empty)}</td></tr>`;
+    if (pagerEl) pagerEl.hidden = true;
     return;
   }
 
-  tbody.innerHTML = rows.map((r) => `
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  currentPages[key] = Math.min(Math.max(1, currentPages[key] || 1), totalPages);
+  const pageRows = pageSlice(rows, currentPages[key]);
+
+  tbody.innerHTML = pageRows.map((r) => `
     <tr>
       ${cfg.columns.map((c) => {
         const val = r[c.key];
@@ -318,6 +326,10 @@ function renderTable(key) {
       </td>
     </tr>
   `).join('');
+
+  if (pagerEl) {
+    renderPager(pagerEl, rows.length, currentPages[key], (p) => { currentPages[key] = p; renderTable(key); });
+  }
 }
 
 /* ---------------- Shared helpers ---------------- */
