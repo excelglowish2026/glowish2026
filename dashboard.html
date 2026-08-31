@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Dashboard — Glowish Tracker</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="dash-wrap">
+    <header class="dash-header">
+      <div class="dash-brand">
+        <img src="img/logo.png" alt="" class="dash-logo" />
+        <span class="mark">Glowish Tracker</span>
+        <span class="dash-store"><span id="store-region"></span> &middot; <span id="store-name"></span></span>
+      </div>
+      <button class="logout-btn" id="logout-btn">Log out</button>
+    </header>
+
+    <div class="form-warning" id="config-banner" hidden style="margin: 0 4px 14px;">
+      This site isn’t connected to a spreadsheet yet. Set <code>API_URL</code> in <code>js/config.js</code>.
+    </div>
+
+    <nav class="tabs">
+      <button class="tab active" data-target="panel-pricelist">Price List</button>
+      <button class="tab" data-target="panel-ledger">Ledger</button>
+      <button class="tab" data-target="panel-inventory">Inventory</button>
+      <button class="tab" data-target="panel-collectibles">Collectibles</button>
+    </nav>
+
+    <div class="page">
+
+      <!-- PRICE LIST -->
+      <section class="page-panel active" id="panel-pricelist">
+        <div class="panel-head">
+          <h2 class="panel-title">Price List</h2>
+          <button class="refresh-btn" id="pricelist-refresh">Refresh</button>
+        </div>
+        <p class="status-line" id="pricelist-status"></p>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>%</th><th>Distributor price</th></tr>
+            </thead>
+            <tbody id="pricelist-tbody"></tbody>
+          </table>
+        </div>
+        <form class="entry-form" id="pricelist-form">
+          <h3>Add item</h3>
+          <div class="form-grid">
+            <div class="field"><label for="pl-store">Store</label><input id="pl-store" name="store" required /></div>
+            <div class="field"><label for="pl-category">Category</label><input id="pl-category" name="category" required /></div>
+            <div class="field wide"><label for="pl-item">Item name</label><input id="pl-item" name="itemName" required /></div>
+            <div class="field"><label for="pl-srp">SRP</label><input id="pl-srp" name="srp" type="number" step="0.01" required /></div>
+            <div class="field"><label for="pl-pct">Percentage</label><input id="pl-pct" name="percentage" type="number" step="0.01" /></div>
+            <div class="field"><label for="pl-dp">Distributor price</label><input id="pl-dp" name="distPrice" type="number" step="0.01" required /></div>
+          </div>
+          <button type="submit" class="btn-secondary">Add to price list</button>
+        </form>
+      </section>
+
+      <!-- LEDGER -->
+      <section class="page-panel" id="panel-ledger">
+        <div class="panel-head">
+          <h2 class="panel-title">Ledger</h2>
+          <button class="refresh-btn" id="ledger-refresh">Refresh</button>
+        </div>
+        <p class="status-line" id="ledger-status"></p>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Store</th><th>Location</th><th>Date</th><th>Beg. balance</th><th>Reference</th><th>Delivery</th><th>Payment</th><th>Balance</th></tr>
+            </thead>
+            <tbody id="ledger-tbody"></tbody>
+          </table>
+        </div>
+        <form class="entry-form" id="ledger-form">
+          <h3>Add entry</h3>
+          <div class="form-grid">
+            <div class="field"><label for="lg-store">Store</label><input id="lg-store" name="store" required /></div>
+            <div class="field"><label for="lg-location">Location</label><input id="lg-location" name="location" required /></div>
+            <div class="field"><label for="lg-date">Date</label><input id="lg-date" name="date" type="date" required /></div>
+            <div class="field"><label for="lg-beg">Beginning balance</label><input id="lg-beg" name="begBalance" type="number" step="0.01" /></div>
+            <div class="field"><label for="lg-ref">Reference</label><input id="lg-ref" name="reference" /></div>
+            <div class="field"><label for="lg-delivery">Delivery</label><input id="lg-delivery" name="delivery" type="number" step="0.01" /></div>
+            <div class="field"><label for="lg-payment">Payment</label><input id="lg-payment" name="payment" type="number" step="0.01" /></div>
+            <div class="field"><label for="lg-balance">Balance</label><input id="lg-balance" name="balance" type="number" step="0.01" /></div>
+          </div>
+          <button type="submit" class="btn-secondary">Add entry</button>
+        </form>
+      </section>
+
+      <!-- INVENTORY -->
+      <section class="page-panel" id="panel-inventory">
+        <div class="panel-head">
+          <h2 class="panel-title">Inventory</h2>
+          <button class="refresh-btn" id="inventory-refresh">Refresh</button>
+        </div>
+        <div class="segmented">
+          <input type="radio" name="inventory-category-view" id="view-old" value="Old" checked />
+          <label for="view-old">Old items</label>
+          <input type="radio" name="inventory-category-view" id="view-new" value="New" />
+          <label for="view-new">New items</label>
+        </div>
+        <p class="status-line" id="inventory-status"></p>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th>Out to</th><th>Address</th><th>Delivered by</th></tr>
+            </thead>
+            <tbody id="inventory-tbody"></tbody>
+          </table>
+        </div>
+        <form class="entry-form" id="inventory-form">
+          <h3>Add item</h3>
+          <div class="form-grid">
+            <div class="field"><label for="inv-store">Store</label><input id="inv-store" name="store" required /></div>
+            <div class="field">
+              <label for="inv-category">Category</label>
+              <select id="inv-category" name="category" required>
+                <option value="Old">Old</option>
+                <option value="New">New</option>
+              </select>
+            </div>
+            <div class="field"><label for="inv-date">Date</label><input id="inv-date" name="date" type="date" /></div>
+            <div class="field wide"><label for="inv-item">Item name</label><input id="inv-item" name="itemName" required /></div>
+            <div class="field"><label for="inv-beg">Beginning</label><input id="inv-beg" name="beg" type="number" /></div>
+            <div class="field"><label for="inv-in">In</label><input id="inv-in" name="in" type="number" /></div>
+            <div class="field"><label for="inv-out">Out</label><input id="inv-out" name="out" type="number" /></div>
+            <div class="field"><label for="inv-total">Total</label><input id="inv-total" name="total" type="number" /></div>
+            <div class="field"><label for="inv-outto">Out to (name)</label><input id="inv-outto" name="outTo" /></div>
+            <div class="field wide"><label for="inv-address">Address</label><input id="inv-address" name="address" /></div>
+            <div class="field"><label for="inv-deliveredby">Delivered by</label><input id="inv-deliveredby" name="deliveredBy" /></div>
+            <div class="field wide"><label for="inv-remarks">Remarks</label><input id="inv-remarks" name="remarks" /></div>
+          </div>
+          <button type="submit" class="btn-secondary">Add item</button>
+        </form>
+      </section>
+
+      <!-- COLLECTIBLES -->
+      <section class="page-panel" id="panel-collectibles">
+        <div class="panel-head">
+          <h2 class="panel-title">Collectibles</h2>
+          <button class="refresh-btn" id="collectibles-refresh">Refresh</button>
+        </div>
+        <p class="status-line" id="collectibles-status"></p>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Store</th><th>Province</th><th>District</th><th>Municipality</th><th>Date</th><th>Name</th><th>Address</th><th>Balance</th></tr>
+            </thead>
+            <tbody id="collectibles-tbody"></tbody>
+          </table>
+        </div>
+        <form class="entry-form" id="collectibles-form">
+          <h3>Add collection</h3>
+          <div class="form-grid">
+            <div class="field"><label for="cl-store">Store</label><input id="cl-store" name="store" required /></div>
+            <div class="field"><label for="cl-province">Province</label><input id="cl-province" name="province" required /></div>
+            <div class="field"><label for="cl-district">District</label><input id="cl-district" name="district" /></div>
+            <div class="field"><label for="cl-municipality">Municipality</label><input id="cl-municipality" name="municipality" /></div>
+            <div class="field"><label for="cl-date">Date</label><input id="cl-date" name="date" type="date" required /></div>
+            <div class="field wide"><label for="cl-name">Name</label><input id="cl-name" name="name" required /></div>
+            <div class="field wide"><label for="cl-address">Address</label><input id="cl-address" name="address" /></div>
+            <div class="field"><label for="cl-balance">Balance</label><input id="cl-balance" name="balance" type="number" step="0.01" /></div>
+          </div>
+          <button type="submit" class="btn-secondary">Add collection</button>
+        </form>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/pricelist.js"></script>
+  <script src="js/ledger.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/collectibles.js"></script>
+</body>
+</html>

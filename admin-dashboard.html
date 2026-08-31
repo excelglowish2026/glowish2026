@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Glowish Tracker</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="dash-wrap">
+    <header class="dash-header">
+      <div class="dash-brand">
+        <img src="img/logo.png" alt="" class="dash-logo" />
+        <span class="mark">Glowish Tracker</span>
+        <span class="admin-badge">Admin</span>
+        <div class="dash-store" style="display:block;">
+          <span>All regions &middot; All stores</span>
+          <div class="refresh-timestamp" id="refresh-timestamp"></div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="refresh-btn" id="refresh-all-btn">Refresh all data</button>
+        <button class="logout-btn" id="logout-btn">Log out</button>
+      </div>
+    </header>
+
+    <div class="form-warning" id="config-banner" hidden style="margin: 0 4px 14px;">
+      This site isn’t connected to a spreadsheet yet. Set <code>API_URL</code> in <code>js/config.js</code>.
+    </div>
+
+    <nav class="tabs">
+      <button class="tab active" data-target="panel-overview">Overview</button>
+      <button class="tab" data-target="panel-pricelist">Price List</button>
+      <button class="tab" data-target="panel-ledger">Ledger</button>
+      <button class="tab" data-target="panel-inventory">Inventory</button>
+      <button class="tab" data-target="panel-collectibles">Collectibles</button>
+      <button class="tab" data-target="panel-reports">Reports</button>
+    </nav>
+
+    <div class="page">
+
+      <!-- OVERVIEW -->
+      <section class="page-panel active" id="panel-overview">
+        <div class="panel-head">
+          <h2 class="panel-title">Overview</h2>
+        </div>
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <h3 class="overview-section-title">By region</h3>
+        <div class="region-breakdown" id="region-breakdown"></div>
+      </section>
+
+      <!-- PRICE LIST -->
+      <section class="page-panel" id="panel-pricelist">
+        <div class="panel-head">
+          <h2 class="panel-title">Price List <span class="search-count" id="count-pricelist"></span></h2>
+        </div>
+        <div class="search-box"><input type="text" id="search-pricelist" placeholder="Search item, store, category…" /></div>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Region</th><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>%</th><th>Distributor price</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admin-pricelist-tbody"></tbody>
+          </table>
+        </div>
+        <div class="form-container" id="form-container-pricelist"></div>
+      </section>
+
+      <!-- LEDGER -->
+      <section class="page-panel" id="panel-ledger">
+        <div class="panel-head">
+          <h2 class="panel-title">Ledger <span class="search-count" id="count-ledger"></span></h2>
+        </div>
+        <div class="search-box"><input type="text" id="search-ledger" placeholder="Search store, location, reference…" /></div>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Region</th><th>Store</th><th>Location</th><th>Date</th><th>Beg. balance</th><th>Reference</th><th>Delivery</th><th>Payment</th><th>Balance</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admin-ledger-tbody"></tbody>
+          </table>
+        </div>
+        <div class="form-container" id="form-container-ledger"></div>
+      </section>
+
+      <!-- INVENTORY -->
+      <section class="page-panel" id="panel-inventory">
+        <div class="panel-head">
+          <h2 class="panel-title">Inventory <span class="search-count" id="count-inventory"></span></h2>
+        </div>
+        <div class="segmented">
+          <input type="radio" name="admin-inventory-view" id="admin-view-old" value="Old" checked />
+          <label for="admin-view-old">Old items</label>
+          <input type="radio" name="admin-inventory-view" id="admin-view-new" value="New" />
+          <label for="admin-view-new">New items</label>
+        </div>
+        <div class="search-box"><input type="text" id="search-inventory" placeholder="Search item, store, out to…" /></div>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Region</th><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th>Out to</th><th>Address</th><th>Delivered by</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admin-inventory-tbody"></tbody>
+          </table>
+        </div>
+        <div class="form-container" id="form-container-inventory"></div>
+      </section>
+
+      <!-- COLLECTIBLES -->
+      <section class="page-panel" id="panel-collectibles">
+        <div class="panel-head">
+          <h2 class="panel-title">Collectibles <span class="search-count" id="count-collectibles"></span></h2>
+        </div>
+        <div class="search-box"><input type="text" id="search-collectibles" placeholder="Search name, municipality, address…" /></div>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Region</th><th>Store</th><th>Province</th><th>District</th><th>Municipality</th><th>Date</th><th>Name</th><th>Address</th><th>Balance</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admin-collectibles-tbody"></tbody>
+          </table>
+        </div>
+        <div class="form-container" id="form-container-collectibles"></div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="page-panel" id="panel-reports">
+        <div class="panel-head">
+          <h2 class="panel-title">Weekly Reports</h2>
+        </div>
+
+        <div class="report-controls">
+          <div class="field">
+            <label for="report-end-date">Week ending</label>
+            <input type="date" id="report-end-date" />
+          </div>
+          <button class="btn-secondary" id="report-generate-btn" type="button">Generate</button>
+          <span class="report-range-label" id="report-range-label"></span>
+        </div>
+
+        <div class="report-block">
+          <div class="report-block-head">
+            <h3>Weekly Sales (from Ledger)</h3>
+            <button class="refresh-btn" id="export-sales-csv">Export CSV</button>
+          </div>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Region</th><th>Store</th><th>Entries</th><th>Delivery</th><th>Payment</th><th>Ending balance</th></tr>
+              </thead>
+              <tbody id="report-sales-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-block">
+          <div class="report-block-head">
+            <h3>Weekly Stock Inventory</h3>
+            <button class="refresh-btn" id="export-stock-csv">Export CSV</button>
+          </div>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Region</th><th>Store</th><th>Item</th><th>Total in</th><th>Total out</th><th>Ending total</th></tr>
+              </thead>
+              <tbody id="report-stock-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin-dashboard.js"></script>
+  <script src="js/admin-crud.js"></script>
+  <script src="js/admin-reports.js"></script>
+</body>
+</html>
