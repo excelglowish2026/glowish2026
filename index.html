@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -41,4 +41,496 @@
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
 </body>
+</html> -->
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Maintenance — Glowish Tracker</title>
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 214, 230, 0.8), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(255, 232, 200, 0.8), transparent 35%),
+        #fff8f5;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: #4a3038;
+      overflow: hidden;
+    }
+
+    .maintenance-wrap {
+      width: 100%;
+      max-width: 620px;
+      padding: 30px 20px;
+    }
+
+    .maintenance-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.94);
+
+      border-radius: 24px;
+      padding: 50px 45px;
+
+      text-align: center;
+
+      box-shadow:
+        0 20px 60px rgba(115, 67, 80, 0.14),
+        0 5px 15px rgba(115, 67, 80, 0.08);
+
+      border: 1px solid rgba(220, 170, 185, 0.35);
+
+      animation: cardAppear 0.8s ease-out;
+    }
+
+    /* Decorative corners */
+    .corner {
+      position: absolute;
+      width: 45px;
+      height: 45px;
+      border-color: #d99aaa;
+      border-style: solid;
+      opacity: 0.55;
+    }
+
+    .corner.tl {
+      top: 20px;
+      left: 20px;
+      border-width: 2px 0 0 2px;
+      border-radius: 10px 0 0 0;
+    }
+
+    .corner.br {
+      right: 20px;
+      bottom: 20px;
+      border-width: 0 2px 2px 0;
+      border-radius: 0 0 10px 0;
+    }
+
+    .logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      margin-bottom: 12px;
+
+      animation: floatLogo 3s ease-in-out infinite;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+
+      color: #b47786;
+    }
+
+    h1 {
+      margin: 0;
+
+      font-size: clamp(32px, 7vw, 48px);
+      line-height: 1.1;
+
+      color: #7d4354;
+      font-weight: 700;
+    }
+
+    .maintenance-title {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: 600;
+
+      color: #9d596d;
+    }
+
+    .description {
+      max-width: 470px;
+      margin: 15px auto 0;
+
+      font-size: 15px;
+      line-height: 1.7;
+
+      color: #765d64;
+    }
+
+    /* Status area */
+    .status-box {
+      margin: 30px auto 0;
+      padding: 20px;
+
+      background: #fff5f7;
+      border: 1px solid #f0d5dc;
+
+      border-radius: 16px;
+    }
+
+    .status-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      color: #82485a;
+    }
+
+    .pulse {
+      width: 9px;
+      height: 9px;
+
+      background: #d97991;
+      border-radius: 50%;
+
+      box-shadow: 0 0 0 0 rgba(217, 121, 145, 0.5);
+
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-message {
+      margin-top: 10px;
+
+      font-size: 13px;
+      color: #98717b;
+
+      min-height: 20px;
+
+      transition: opacity 0.3s ease;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      margin-top: 18px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+
+      background: #f1dfe4;
+
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+
+      border-radius: 20px;
+
+      background: linear-gradient(
+        90deg,
+        #d98ca0,
+        #e9a6b7,
+        #d98ca0
+      );
+
+      background-size: 200% 100%;
+
+      animation:
+        progress 8s ease-in-out infinite,
+        shimmer 2s linear infinite;
+    }
+
+    .progress-text {
+      margin-top: 8px;
+
+      font-size: 11px;
+      color: #a5848c;
+    }
+
+    /* Return time */
+    .return-box {
+      margin-top: 30px;
+    }
+
+    .return-label {
+      margin: 0;
+
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+
+      color: #a47a84;
+    }
+
+    .return-time {
+      margin: 7px 0 0;
+
+      font-size: 21px;
+      font-weight: 700;
+
+      color: #7d4354;
+    }
+
+    .footer {
+      margin-top: 30px;
+
+      font-size: 11px;
+      line-height: 1.6;
+
+      color: #ad9298;
+    }
+
+    /* Animations */
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes floatLogo {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(217, 121, 145, 0.5);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(217, 121, 145, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(217, 121, 145, 0);
+      }
+    }
+
+    @keyframes progress {
+      0% {
+        width: 5%;
+      }
+
+      25% {
+        width: 35%;
+      }
+
+      50% {
+        width: 60%;
+      }
+
+      75% {
+        width: 82%;
+      }
+
+      100% {
+        width: 96%;
+      }
+    }
+
+    @keyframes shimmer {
+      from {
+        background-position: 200% 0;
+      }
+
+      to {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .maintenance-wrap {
+        padding: 20px 15px;
+      }
+
+      .maintenance-card {
+        padding: 40px 25px;
+      }
+
+      .logo {
+        width: 90px;
+        height: 90px;
+      }
+
+      .maintenance-title {
+        font-size: 21px;
+      }
+
+      .description {
+        font-size: 14px;
+      }
+
+      .corner {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="maintenance-wrap">
+
+    <section class="maintenance-card">
+
+      <div class="corner tl"></div>
+      <div class="corner br"></div>
+
+      <!-- Existing Glowish Tracker Logo -->
+      <img
+        src="img/logo.png"
+        alt="Glowish Tracker"
+        class="logo"
+      />
+
+      <p class="eyebrow">
+        Luzon &middot; Visayas &middot; Mindanao
+      </p>
+
+      <h1>
+        Glowish Tracker
+      </h1>
+
+      <div class="maintenance-title">
+        We're currently updating the system
+      </div>
+
+      <p class="description">
+        The Glowish Tracker is temporarily unavailable while we perform
+        scheduled maintenance and update our database. Your store records
+        are being synchronized to ensure everything is up to date.
+      </p>
+
+      <!-- Database Update Status -->
+      <div class="status-box">
+
+        <div class="status-header">
+          <span class="pulse"></span>
+          <span>System maintenance in progress</span>
+        </div>
+
+        <div
+          class="status-message"
+          id="status-message"
+        >
+          Uploading store data...
+        </div>
+
+        <div class="progress-container">
+
+          <div class="progress-track">
+            <div
+              class="progress-bar"
+              id="progress-bar"
+            ></div>
+          </div>
+
+          <div
+            class="progress-text"
+            id="progress-text"
+          >
+            Updating database...
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Return Information -->
+      <div class="return-box">
+
+        <p class="return-label">
+          Expected to be back online
+        </p>
+
+        <p class="return-time">
+          September 8, 2026 &middot; 10:00 AM
+        </p>
+
+      </div>
+
+      <p class="footer">
+        Thank you for your patience while we make Glowish Tracker
+        better and keep your records synchronized.
+      </p>
+
+    </section>
+
+  </main>
+
+
+  <script>
+    /*
+     * Rotating maintenance status messages
+     */
+
+    const messages = [
+      "Uploading store data...",
+      "Updating database records...",
+      "Synchronizing branch information...",
+      "Processing uploaded records...",
+      "Verifying database updates...",
+      "Finalizing system updates..."
+    ];
+
+    const statusMessage =
+      document.getElementById("status-message");
+
+    const progressText =
+      document.getElementById("progress-text");
+
+    let messageIndex = 0;
+
+    setInterval(() => {
+
+      statusMessage.style.opacity = "0";
+
+      setTimeout(() => {
+
+        messageIndex =
+          (messageIndex + 1) % messages.length;
+
+        statusMessage.textContent =
+          messages[messageIndex];
+
+        progressText.textContent =
+          messages[messageIndex];
+
+        statusMessage.style.opacity = "1";
+
+      }, 300);
+
+    }, 2500);
+  </script>
+
+</body>
 </html>
+```
+
