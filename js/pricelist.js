@@ -16,6 +16,13 @@
   });
   refreshBtn.addEventListener('click', load);
 
+  // Distributor price is always 20% off SRP — computed live, never typed in.
+  form.srp.addEventListener('input', updateDistPrice);
+  function updateDistPrice() {
+    const srp = parseFloat(form.srp.value);
+    form.distPrice.value = isNaN(srp) ? '' : (srp * 0.8).toFixed(2);
+  }
+
   async function load() {
     if (!apiConfigured()) return;
     setStatus('Loading price list…');

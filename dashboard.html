@@ -40,7 +40,7 @@
         <div class="table-scroll">
           <table class="ledger-table">
             <thead>
-              <tr><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>%</th><th>Distributor price</th></tr>
+              <tr><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>Promo %</th><th>Distributor price</th></tr>
             </thead>
             <tbody id="pricelist-tbody"></tbody>
           </table>
@@ -53,8 +53,19 @@
             <div class="field"><label for="pl-category">Category</label><input id="pl-category" name="category" required /></div>
             <div class="field wide"><label for="pl-item">Item name</label><input id="pl-item" name="itemName" required /></div>
             <div class="field"><label for="pl-srp">SRP</label><input id="pl-srp" name="srp" type="number" step="0.01" required /></div>
-            <div class="field"><label for="pl-pct">Percentage</label><input id="pl-pct" name="percentage" type="number" step="0.01" /></div>
-            <div class="field"><label for="pl-dp">Distributor price</label><input id="pl-dp" name="distPrice" type="number" step="0.01" required /></div>
+            <div class="field">
+              <label for="pl-pct">Promo %</label>
+              <select id="pl-pct" name="percentage" required>
+                <option value="No Promo">No Promo</option>
+                <option value="50%">50%</option>
+                <option value="40%">40%</option>
+                <option value="30%">30%</option>
+                <option value="25%">25%</option>
+                <option value="20%">20%</option>
+                <option value="10%">10%</option>
+              </select>
+            </div>
+            <div class="field"><label for="pl-dp">Distributor price (auto, 20% off SRP)</label><input id="pl-dp" name="distPrice" type="number" step="0.01" readonly /></div>
           </div>
           <button type="submit" class="btn-secondary">Add to price list</button>
         </form>
@@ -70,7 +81,7 @@
         <div class="table-scroll">
           <table class="ledger-table">
             <thead>
-              <tr><th>Store</th><th>Location</th><th>Date</th><th>Beg. balance</th><th>Reference</th><th>Delivery</th><th>Payment</th><th>Balance</th></tr>
+              <tr><th>Store</th><th>Location</th><th>Date</th><th>Beg. balance</th><th>Reference</th><th>Delivery</th><th>Payment</th><th>Balance</th><th>Remarks</th></tr>
             </thead>
             <tbody id="ledger-tbody"></tbody>
           </table>
@@ -87,6 +98,7 @@
             <div class="field"><label for="lg-delivery">Delivery</label><input id="lg-delivery" name="delivery" type="number" step="0.01" /></div>
             <div class="field"><label for="lg-payment">Payment</label><input id="lg-payment" name="payment" type="number" step="0.01" /></div>
             <div class="field"><label for="lg-balance">Balance</label><input id="lg-balance" name="balance" type="number" step="0.01" /></div>
+            <div class="field wide"><label for="lg-remarks">Remarks</label><input id="lg-remarks" name="remarks" placeholder="Optional note" /></div>
           </div>
           <button type="submit" class="btn-secondary">Add entry</button>
         </form>
@@ -98,6 +110,7 @@
           <h2 class="panel-title">Inventory</h2>
           <button class="refresh-btn" id="inventory-refresh">Refresh</button>
         </div>
+        <div class="warehouse-tab-bar" id="warehouse-tabs"></div>
         <div class="segmented">
           <input type="radio" name="inventory-category-view" id="view-old" value="Old" checked />
           <label for="view-old">Old items</label>
@@ -108,7 +121,7 @@
         <div class="table-scroll">
           <table class="ledger-table">
             <thead>
-              <tr><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th>Out to</th><th>Address</th><th>Delivered by</th></tr>
+              <tr><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th>Out to</th><th>Address</th><th>Delivered by</th><th>Remarks</th></tr>
             </thead>
             <tbody id="inventory-tbody"></tbody>
           </table>
@@ -136,6 +149,7 @@
             <div class="field"><label for="inv-deliveredby">Delivered by</label><input id="inv-deliveredby" name="deliveredBy" /></div>
             <div class="field wide"><label for="inv-remarks">Remarks</label><input id="inv-remarks" name="remarks" /></div>
           </div>
+          <p class="status-line" id="inventory-warehouse-hint"></p>
           <button type="submit" class="btn-secondary">Add item</button>
         </form>
       </section>
@@ -178,6 +192,7 @@
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/pagination.js"></script>
+  <script src="js/modal.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/pricelist.js"></script>
   <script src="js/ledger.js"></script>

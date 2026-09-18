@@ -2,6 +2,13 @@
   document.addEventListener('DOMContentLoaded', () => {
     Object.keys(TABLE_CONFIGS).forEach(initForm);
 
+    // Warehouse options aren't known until the first data load finishes,
+    // so refresh any dynamic <select> options once that happens (and every
+    // time data reloads, in case a warehouse was just added).
+    document.addEventListener('admin-data:loaded', () => {
+      Object.keys(TABLE_CONFIGS).forEach(refreshDynamicOptions);
+    });
+
     // Event delegation: table rows are re-rendered on every data reload,
     // so we listen at the document level instead of rebinding per row.
     document.addEventListener('click', (e) => {
@@ -17,6 +24,11 @@
     });
   });
 
+  function dynamicOptionsFor(name) {
+    if (name === 'warehouses') return WAREHOUSES || [];
+    return [];
+  }
+
   function initForm(key) {
     const cfg = TABLE_CONFIGS[key];
     const container = document.getElementById('form-container-' + key);
@@ -27,8 +39,11 @@
       const id = `f-${key}-${f.key}`;
       let input;
       if (f.type === 'select') {
+        const opts = f.dynamicOptions ? dynamicOptionsFor(f.dynamicOptions) : f.options;
         input = `<select id="${id}" name="${f.key}" ${f.required ? 'required' : ''}>` +
-          f.options.map((o) => `<option value="${o}">${o}</option>`).join('') + `</select>`;
+          opts.map((o) => `<option value="${o}">${o}</option>`).join('') + `</select>`;
+      } else if (f.type === 'computed') {
+        input = `<input id="${id}" name="${f.key}" type="text" readonly />`;
       } else {
         input = `<input id="${id}" name="${f.key}" type="${f.type || 'text'}" ` +
           `${f.type === 'number' ? 'step="0.01"' : ''} ${f.required ? 'required' : ''} />`;
@@ -57,6 +72,31 @@
     const form = document.getElementById('form-' + key);
     form.addEventListener('submit', (e) => handleSubmit(e, key));
     document.getElementById('cancel-edit-' + key).addEventListener('click', () => resetForm(key));
+
+    // Wire up computed fields (e.g. distributor price = 20% off SRP) to
+    // recalculate live as their source field changes.
+    cfg.formFields.forEach((f) => {
+      if (f.type !== 'computed') return;
+      const sourceEl = form.elements[f.computeFrom];
+      const targetEl = form.elements[f.key];
+      if (!sourceEl || !targetEl) return;
+      sourceEl.addEventListener('input', () => { targetEl.value = f.computeFn(sourceEl.value); });
+    });
+  }
+
+  function refreshDynamicOptions(key) {
+    const cfg = TABLE_CONFIGS[key];
+    const form = document.getElementById('form-' + key);
+    if (!form) return;
+    cfg.formFields.forEach((f) => {
+      if (f.type !== 'select' || !f.dynamicOptions) return;
+      const select = form.elements[f.key];
+      if (!select) return;
+      const current = select.value;
+      const opts = dynamicOptionsFor(f.dynamicOptions);
+      select.innerHTML = opts.map((o) => `<option value="${o}">${o}</option>`).join('');
+      if (opts.includes(current)) select.value = current;
+    });
   }
 
   async function handleSubmit(e, key) {

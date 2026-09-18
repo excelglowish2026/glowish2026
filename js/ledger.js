@@ -35,7 +35,7 @@
 
   function render() {
     if (!allRows.length) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty-row">No entries yet. Add the first one below.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-row">No entries yet. Add the first one below.</td></tr>';
       pagerEl.hidden = true;
       return;
     }
@@ -50,6 +50,7 @@
         <td class="num">${escapeHtml(r.Delivery)}</td>
         <td class="num">${escapeHtml(r.Payment)}</td>
         <td class="num">${escapeHtml(r.Balance)}</td>
+        ${remarksCellHtml(r.Remarks)}
       </tr>
     `).join('');
     renderPager(pagerEl, allRows.length, currentPage, (p) => { currentPage = p; render(); });
@@ -66,7 +67,8 @@
       Reference: form.reference.value.trim(),
       Delivery: form.delivery.value,
       Payment: form.payment.value,
-      Balance: form.balance.value
+      Balance: form.balance.value,
+      Remarks: form.remarks.value.trim()
     };
     setStatus('Saving…');
     try {

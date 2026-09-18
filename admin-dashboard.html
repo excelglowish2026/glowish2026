@@ -35,6 +35,7 @@
       <button class="tab" data-target="panel-inventory">Inventory</button>
       <button class="tab" data-target="panel-collectibles">Collectibles</button>
       <button class="tab" data-target="panel-reports">Reports</button>
+      <button class="tab" data-target="panel-insurance" id="tab-insurance" hidden>Insurance</button>
     </nav>
 
     <div class="page">
@@ -58,7 +59,7 @@
         <div class="table-scroll">
           <table class="ledger-table">
             <thead>
-              <tr><th>Region</th><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>%</th><th>Distributor price</th><th>Actions</th></tr>
+              <tr><th>Region</th><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>Promo %</th><th>Distributor price</th><th>Actions</th></tr>
             </thead>
             <tbody id="admin-pricelist-tbody"></tbody>
           </table>
@@ -76,7 +77,7 @@
         <div class="table-scroll">
           <table class="ledger-table">
             <thead>
-              <tr><th>Region</th><th>Store</th><th>Location</th><th>Date</th><th>Beg. balance</th><th>Reference</th><th>Delivery</th><th>Payment</th><th>Balance</th><th>Actions</th></tr>
+              <tr><th>Region</th><th>Store</th><th>Location</th><th>Date</th><th>Beg. balance</th><th>Reference</th><th>Delivery</th><th>Payment</th><th>Balance</th><th>Remarks</th><th>Actions</th></tr>
             </thead>
             <tbody id="admin-ledger-tbody"></tbody>
           </table>
@@ -90,23 +91,44 @@
         <div class="panel-head">
           <h2 class="panel-title">Inventory <span class="search-count" id="count-inventory"></span></h2>
         </div>
-        <div class="segmented">
-          <input type="radio" name="admin-inventory-view" id="admin-view-old" value="Old" checked />
-          <label for="admin-view-old">Old items</label>
-          <input type="radio" name="admin-inventory-view" id="admin-view-new" value="New" />
-          <label for="admin-view-new">New items</label>
+
+        <div class="low-stock-banner" id="low-stock-banner" hidden>
+          <span>Showing low-stock items only (below 10) across all warehouses and regions.</span>
+          <button type="button" id="clear-low-stock-filter">Clear filter</button>
         </div>
-        <div class="search-box"><input type="text" id="search-inventory" placeholder="Search item, store, out to…" /></div>
-        <div class="table-scroll">
-          <table class="ledger-table">
-            <thead>
-              <tr><th>Region</th><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th>Out to</th><th>Address</th><th>Delivered by</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="admin-inventory-tbody"></tbody>
-          </table>
+
+        <div id="inventory-low-stock-view" hidden>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Region</th><th>Warehouse</th><th>Store</th><th>Item name</th><th>Total</th></tr>
+              </thead>
+              <tbody id="low-stock-tbody"></tbody>
+            </table>
+          </div>
         </div>
-        <div class="pager" id="pager-inventory" hidden></div>
-        <div class="form-container" id="form-container-inventory"></div>
+
+        <div id="inventory-normal-view">
+          <div class="warehouse-tab-bar" id="admin-warehouse-tabs"></div>
+          <button type="button" class="add-warehouse-btn" id="add-warehouse-btn">+ Add warehouse</button>
+          <div class="segmented" style="margin-top: 14px;">
+            <input type="radio" name="admin-inventory-view" id="admin-view-old" value="Old" checked />
+            <label for="admin-view-old">Old items</label>
+            <input type="radio" name="admin-inventory-view" id="admin-view-new" value="New" />
+            <label for="admin-view-new">New items</label>
+          </div>
+          <div class="search-box"><input type="text" id="search-inventory" placeholder="Search item, store, out to…" /></div>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Region</th><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th>Out to</th><th>Address</th><th>Delivered by</th><th>Remarks</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="admin-inventory-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager-inventory" hidden></div>
+          <div class="form-container" id="form-container-inventory"></div>
+        </div>
       </section>
 
       <!-- COLLECTIBLES -->
@@ -173,14 +195,37 @@
         </div>
       </section>
 
+      <!-- INSURANCE (owner only) -->
+      <section class="page-panel" id="panel-insurance">
+        <div class="panel-head">
+          <h2 class="panel-title">Insurance Updates</h2>
+          <button class="refresh-btn" id="export-insurance-csv">Export to Excel (CSV)</button>
+        </div>
+        <p class="owner-only-note">Visible only to your account — staff and other admins never see this tab.</p>
+
+        <div class="month-tab-bar" id="insurance-month-tabs"></div>
+        <p class="status-line" id="insurance-status"></p>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr><th>Name</th><th>Birthdate</th><th>Address</th><th>Remarks</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="insurance-tbody"></tbody>
+          </table>
+        </div>
+        <div class="form-container" id="form-container-insurance"></div>
+      </section>
+
     </div>
   </div>
 
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/pagination.js"></script>
+  <script src="js/modal.js"></script>
   <script src="js/admin-dashboard.js"></script>
   <script src="js/admin-crud.js"></script>
   <script src="js/admin-reports.js"></script>
+  <script src="js/admin-insurance.js"></script>
 </body>
 </html>
