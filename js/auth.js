@@ -51,5 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function routeToDashboard(session) {
-  window.location.href = session.role === 'admin' ? 'admin-dashboard.html' : 'dashboard.html';
+  const isAdminLike = session.role === 'admin' || session.role === 'owner';
+  window.location.href = isAdminLike ? 'admin-dashboard.html' : 'dashboard.html';
 }
