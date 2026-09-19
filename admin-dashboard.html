@@ -53,19 +53,47 @@
       <!-- PRICE LIST -->
       <section class="page-panel" id="panel-pricelist">
         <div class="panel-head">
-          <h2 class="panel-title">Price List <span class="search-count" id="count-pricelist"></span></h2>
+          <h2 class="panel-title">Price List</h2>
         </div>
-        <div class="search-box"><input type="text" id="search-pricelist" placeholder="Search item, store, category…" /></div>
-        <div class="table-scroll">
-          <table class="ledger-table">
-            <thead>
-              <tr><th>Region</th><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>Promo %</th><th>Distributor price</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="admin-pricelist-tbody"></tbody>
-          </table>
+
+        <div class="segmented">
+          <input type="radio" name="admin-pricelist-view" id="admin-pl-view-regular" value="regular" checked />
+          <label for="admin-pl-view-regular">Regular Price</label>
+          <input type="radio" name="admin-pricelist-view" id="admin-pl-view-promo" value="promo" />
+          <label for="admin-pl-view-promo">Promo Rates</label>
         </div>
-        <div class="pager" id="pager-pricelist" hidden></div>
-        <div class="form-container" id="form-container-pricelist"></div>
+
+        <!-- REGULAR PRICE -->
+        <div id="regularprice-view">
+          <p class="panel-meta" id="count-regularprice"></p>
+          <div class="search-box"><input type="text" id="search-regularprice" placeholder="Search item, store, category…" /></div>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Region</th><th>Store</th><th>Category</th><th>Item name</th><th>Price</th><th>Discount</th><th>Distributor price</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="admin-regularprice-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager-regularprice" hidden></div>
+          <div class="form-container" id="form-container-regularprice"></div>
+        </div>
+
+        <!-- PROMO RATES -->
+        <div id="promorates-view" hidden>
+          <p class="panel-meta" id="count-promorates"></p>
+          <div class="search-box"><input type="text" id="search-promorates" placeholder="Search item, store, promo…" /></div>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Region</th><th>Store</th><th>Category</th><th>Item name</th><th>Promo</th><th>SRP</th><th>Discount</th><th>Distributor price</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="admin-promorates-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager-promorates" hidden></div>
+          <div class="form-container" id="form-container-promorates"></div>
+        </div>
       </section>
 
       <!-- LEDGER -->

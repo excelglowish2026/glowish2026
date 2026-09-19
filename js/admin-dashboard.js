@@ -2,39 +2,76 @@ let SESSION = null;
 
 // Holds the merged (all-region) rows for each sheet, loaded once on page
 // load and reused by every tab, the search boxes, and the reports tab.
-let ADMIN_DATA = { PriceList: [], Ledger: [], Inventory: [], Collectibles: [] };
+let ADMIN_DATA = { RegularPrice: [], PromoRates: [], Ledger: [], Inventory: [], Collectibles: [] };
 
 let WAREHOUSES = [];
 let activeWarehouse = null;
 let lowStockOnly = false;
 
 const REGIONS = ['Luzon', 'Visayas', 'Mindanao'];
-const PROMO_OPTIONS = ['No Promo', '50%', '40%', '30%', '25%', '20%', '10%'];
 
 const TABLE_CONFIGS = {
-  pricelist: {
-    sheet: 'PriceList',
-    tbody: 'admin-pricelist-tbody',
+  regularprice: {
+    sheet: 'RegularPrice',
+    tbody: 'admin-regularprice-tbody',
     colspan: 8,
-    empty: 'No price list items found.',
+    empty: 'No regular price items found.',
     columns: [
       { key: 'Region', pill: true },
       { key: 'Store' },
       { key: 'Category' },
       { key: 'ItemName' },
-      { key: 'SRP', num: true },
-      { key: 'Percentage', num: true },
+      { key: 'Price', num: true },
+      { key: 'DiscountPercent', num: true },
       { key: 'DistPrice', num: true }
     ],
     formFields: [
       { key: 'Store', label: 'Store', required: true },
       { key: 'Category', label: 'Category', required: true },
       { key: 'ItemName', label: 'Item name', required: true, wide: true },
-      { key: 'SRP', label: 'SRP', type: 'number', required: true },
-      { key: 'Percentage', label: 'Promo %', type: 'select', options: PROMO_OPTIONS, required: true },
+      { key: 'Price', label: 'Price', type: 'number', required: true },
+      { key: 'DiscountPercent', label: 'Discount', type: 'select', options: ['10%', '20%'], required: true },
       {
-        key: 'DistPrice', label: 'Distributor price (auto, 20% off SRP)', type: 'computed',
-        computeFrom: 'SRP', computeFn: (srp) => { const n = parseFloat(srp); return isNaN(n) ? '' : (n * 0.8).toFixed(2); }
+        key: 'DistPrice', label: 'Distributor price (auto)', type: 'computed',
+        computeFrom: ['Price', 'DiscountPercent'],
+        computeFn: (v) => {
+          const price = parseFloat(v.Price);
+          const pct = parseFloat(v.DiscountPercent);
+          return (isNaN(price) || isNaN(pct)) ? '' : (price * (1 - pct / 100)).toFixed(2);
+        }
+      }
+    ]
+  },
+  promorates: {
+    sheet: 'PromoRates',
+    tbody: 'admin-promorates-tbody',
+    colspan: 9,
+    empty: 'No promo rates found.',
+    columns: [
+      { key: 'Region', pill: true },
+      { key: 'Store' },
+      { key: 'Category' },
+      { key: 'ItemName' },
+      { key: 'PromoName' },
+      { key: 'SRP', num: true },
+      { key: 'DiscountPercent', num: true },
+      { key: 'DistPrice', num: true }
+    ],
+    formFields: [
+      { key: 'Store', label: 'Store', required: true },
+      { key: 'Category', label: 'Category', required: true },
+      { key: 'ItemName', label: 'Item name', required: true, wide: true },
+      { key: 'PromoName', label: 'Promo (e.g. Christmas Sale)', required: true, wide: true },
+      { key: 'SRP', label: 'SRP', type: 'number', required: true },
+      { key: 'DiscountPercent', label: 'Discount', type: 'select', options: ['10%', '15%', '20%', '25%', '30%', '40%', '50%'], required: true },
+      {
+        key: 'DistPrice', label: 'Distributor price (auto)', type: 'computed',
+        computeFrom: ['SRP', 'DiscountPercent'],
+        computeFn: (v) => {
+          const srp = parseFloat(v.SRP);
+          const pct = parseFloat(v.DiscountPercent);
+          return (isNaN(srp) || isNaN(pct)) ? '' : (srp * (1 - pct / 100)).toFixed(2);
+        }
       }
     ]
   },
@@ -133,8 +170,8 @@ const TABLE_CONFIGS = {
   }
 };
 
-const searchTerms = { pricelist: '', ledger: '', inventory: '', collectibles: '' };
-const currentPages = { pricelist: 1, ledger: 1, inventory: 1, collectibles: 1 };
+const searchTerms = { regularprice: '', promorates: '', ledger: '', inventory: '', collectibles: '' };
+const currentPages = { regularprice: 1, promorates: 1, ledger: 1, inventory: 1, collectibles: 1 };
 
 document.addEventListener('DOMContentLoaded', () => {
   const raw = sessionStorage.getItem('session');
@@ -186,6 +223,15 @@ document.addEventListener('DOMContentLoaded', () => {
     r.addEventListener('change', () => { currentPages.inventory = 1; renderTable('inventory'); });
   });
 
+  // Price List: Regular Price / Promo Rates toggle
+  document.querySelectorAll('input[name="admin-pricelist-view"]').forEach((r) => {
+    r.addEventListener('change', () => {
+      const showRegular = document.querySelector('input[name="admin-pricelist-view"]:checked').value === 'regular';
+      document.getElementById('regularprice-view').hidden = !showRegular;
+      document.getElementById('promorates-view').hidden = showRegular;
+    });
+  });
+
   document.getElementById('add-warehouse-btn').addEventListener('click', handleAddWarehouse);
   document.getElementById('clear-low-stock-filter').addEventListener('click', exitLowStockView);
 
@@ -196,15 +242,17 @@ async function loadAllData() {
   if (!apiConfigured()) return;
   setLoadState(true);
   try {
-    const [pl, lg, inv, cl, wh] = await Promise.all([
-      apiGet({ action: 'getAllData', sheet: 'PriceList' }),
+    const [rp, pr, lg, inv, cl, wh] = await Promise.all([
+      apiGet({ action: 'getAllData', sheet: 'RegularPrice' }),
+      apiGet({ action: 'getAllData', sheet: 'PromoRates' }),
       apiGet({ action: 'getAllData', sheet: 'Ledger' }),
       apiGet({ action: 'getAllData', sheet: 'Inventory' }),
       apiGet({ action: 'getAllData', sheet: 'Collectibles' }),
       apiGet({ action: 'getWarehouses' })
     ]);
     ADMIN_DATA = {
-      PriceList: pl.success ? pl.rows : [],
+      RegularPrice: rp.success ? rp.rows : [],
+      PromoRates: pr.success ? pr.rows : [],
       Ledger: lg.success ? lg.rows : [],
       Inventory: inv.success ? inv.rows : [],
       Collectibles: cl.success ? cl.rows : []
@@ -340,7 +388,7 @@ function renderOverview() {
 
   const kpis = [
     { label: 'Active stores', value: stores.length, sub: REGIONS.length + ' regions' },
-    { label: 'Price list items', value: ADMIN_DATA.PriceList.length, sub: '' },
+    { label: 'Price list items', value: ADMIN_DATA.RegularPrice.length + ADMIN_DATA.PromoRates.length, sub: 'regular + promo' },
     { label: 'Outstanding ledger balance', value: formatMoney(totalLedgerBalance), sub: 'across all stores' },
     { label: 'Outstanding collectibles', value: formatMoney(totalCollectibles), sub: ADMIN_DATA.Collectibles.length + ' records' },
     { label: 'Inventory items tracked', value: distinctItems.size, sub: ADMIN_DATA.Inventory.length + ' entries' },
@@ -366,7 +414,8 @@ function renderOverview() {
     const regionCollectibles = sumValues(
       ADMIN_DATA.Collectibles.filter((r) => r.Region === region).map((r) => r.Balance)
     );
-    const regionPriceItems = ADMIN_DATA.PriceList.filter((r) => r.Region === region).length;
+    const regionPriceItems = ADMIN_DATA.RegularPrice.filter((r) => r.Region === region).length +
+      ADMIN_DATA.PromoRates.filter((r) => r.Region === region).length;
     return `
       <div class="region-card">
         <h4>${escapeHtml(region)}</h4>
@@ -383,7 +432,7 @@ function renderOverview() {
 
 function distinctStores() {
   const seen = new Map();
-  [...ADMIN_DATA.PriceList, ...ADMIN_DATA.Ledger, ...ADMIN_DATA.Inventory, ...ADMIN_DATA.Collectibles].forEach((r) => {
+  [...ADMIN_DATA.RegularPrice, ...ADMIN_DATA.PromoRates, ...ADMIN_DATA.Ledger, ...ADMIN_DATA.Inventory, ...ADMIN_DATA.Collectibles].forEach((r) => {
     if (!r.Store || !r.Region) return;
     const key = r.Region + '||' + r.Store;
     if (!seen.has(key)) seen.set(key, { region: r.Region, store: r.Store });

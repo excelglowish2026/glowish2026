@@ -73,14 +73,28 @@
     form.addEventListener('submit', (e) => handleSubmit(e, key));
     document.getElementById('cancel-edit-' + key).addEventListener('click', () => resetForm(key));
 
-    // Wire up computed fields (e.g. distributor price = 20% off SRP) to
-    // recalculate live as their source field changes.
+    // Wire up computed fields (e.g. distributor price = price × discount) to
+    // recalculate live as any of their source fields change. computeFrom can
+    // be a single field name or an array of them; computeFn always receives
+    // an object keyed by those field names.
     cfg.formFields.forEach((f) => {
       if (f.type !== 'computed') return;
-      const sourceEl = form.elements[f.computeFrom];
+      const sources = Array.isArray(f.computeFrom) ? f.computeFrom : [f.computeFrom];
       const targetEl = form.elements[f.key];
-      if (!sourceEl || !targetEl) return;
-      sourceEl.addEventListener('input', () => { targetEl.value = f.computeFn(sourceEl.value); });
+      if (!targetEl) return;
+      const recompute = () => {
+        const values = {};
+        sources.forEach((s) => {
+          const el = form.elements[s];
+          values[s] = el ? el.value : '';
+        });
+        targetEl.value = f.computeFn(values);
+      };
+      sources.forEach((s) => {
+        const el = form.elements[s];
+        if (!el) return;
+        el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', recompute);
+      });
     });
   }
 

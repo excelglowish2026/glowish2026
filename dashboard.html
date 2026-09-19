@@ -36,39 +36,83 @@
           <h2 class="panel-title">Price List</h2>
           <button class="refresh-btn" id="pricelist-refresh">Refresh</button>
         </div>
-        <p class="status-line" id="pricelist-status"></p>
-        <div class="table-scroll">
-          <table class="ledger-table">
-            <thead>
-              <tr><th>Store</th><th>Category</th><th>Item name</th><th>SRP</th><th>Promo %</th><th>Distributor price</th></tr>
-            </thead>
-            <tbody id="pricelist-tbody"></tbody>
-          </table>
+
+        <div class="segmented">
+          <input type="radio" name="pricelist-view" id="pl-view-regular" value="regular" checked />
+          <label for="pl-view-regular">Regular Price</label>
+          <input type="radio" name="pricelist-view" id="pl-view-promo" value="promo" />
+          <label for="pl-view-promo">Promo Rates</label>
         </div>
-        <div class="pager" id="pager-pricelist" hidden></div>
-        <form class="entry-form" id="pricelist-form">
-          <h3>Add item</h3>
-          <div class="form-grid">
-            <div class="field"><label for="pl-store">Store</label><input id="pl-store" name="store" required /></div>
-            <div class="field"><label for="pl-category">Category</label><input id="pl-category" name="category" required /></div>
-            <div class="field wide"><label for="pl-item">Item name</label><input id="pl-item" name="itemName" required /></div>
-            <div class="field"><label for="pl-srp">SRP</label><input id="pl-srp" name="srp" type="number" step="0.01" required /></div>
-            <div class="field">
-              <label for="pl-pct">Promo %</label>
-              <select id="pl-pct" name="percentage" required>
-                <option value="No Promo">No Promo</option>
-                <option value="50%">50%</option>
-                <option value="40%">40%</option>
-                <option value="30%">30%</option>
-                <option value="25%">25%</option>
-                <option value="20%">20%</option>
-                <option value="10%">10%</option>
-              </select>
-            </div>
-            <div class="field"><label for="pl-dp">Distributor price (auto, 20% off SRP)</label><input id="pl-dp" name="distPrice" type="number" step="0.01" readonly /></div>
+
+        <!-- REGULAR PRICE -->
+        <div id="regularprice-view">
+          <p class="status-line" id="regularprice-status"></p>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Store</th><th>Category</th><th>Item name</th><th>Price</th><th>Discount</th><th>Distributor price</th></tr>
+              </thead>
+              <tbody id="regularprice-tbody"></tbody>
+            </table>
           </div>
-          <button type="submit" class="btn-secondary">Add to price list</button>
-        </form>
+          <div class="pager" id="pager-regularprice" hidden></div>
+          <form class="entry-form" id="regularprice-form">
+            <h3>Add item</h3>
+            <div class="form-grid">
+              <div class="field"><label for="rp-store">Store</label><input id="rp-store" name="store" required /></div>
+              <div class="field"><label for="rp-category">Category</label><input id="rp-category" name="category" required /></div>
+              <div class="field wide"><label for="rp-item">Item name</label><input id="rp-item" name="itemName" required /></div>
+              <div class="field"><label for="rp-price">Price</label><input id="rp-price" name="price" type="number" step="0.01" required /></div>
+              <div class="field">
+                <label for="rp-discount">Discount</label>
+                <select id="rp-discount" name="discountPercent" required>
+                  <option value="10%">10%</option>
+                  <option value="20%">20%</option>
+                </select>
+              </div>
+              <div class="field"><label for="rp-dp">Distributor price (auto)</label><input id="rp-dp" name="distPrice" type="number" step="0.01" readonly /></div>
+            </div>
+            <button type="submit" class="btn-secondary">Add to price list</button>
+          </form>
+        </div>
+
+        <!-- PROMO RATES -->
+        <div id="promorates-view" hidden>
+          <p class="status-line" id="promorates-status"></p>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead>
+                <tr><th>Store</th><th>Category</th><th>Item name</th><th>Promo</th><th>SRP</th><th>Discount</th><th>Distributor price</th></tr>
+              </thead>
+              <tbody id="promorates-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager-promorates" hidden></div>
+          <form class="entry-form" id="promorates-form">
+            <h3>Add item</h3>
+            <div class="form-grid">
+              <div class="field"><label for="pr-store">Store</label><input id="pr-store" name="store" required /></div>
+              <div class="field"><label for="pr-category">Category</label><input id="pr-category" name="category" required /></div>
+              <div class="field wide"><label for="pr-item">Item name</label><input id="pr-item" name="itemName" required /></div>
+              <div class="field wide"><label for="pr-promo">Promo (e.g. Christmas Sale)</label><input id="pr-promo" name="promoName" required /></div>
+              <div class="field"><label for="pr-srp">SRP</label><input id="pr-srp" name="srp" type="number" step="0.01" required /></div>
+              <div class="field">
+                <label for="pr-discount">Discount</label>
+                <select id="pr-discount" name="discountPercent" required>
+                  <option value="10%">10%</option>
+                  <option value="15%">15%</option>
+                  <option value="20%">20%</option>
+                  <option value="25%">25%</option>
+                  <option value="30%">30%</option>
+                  <option value="40%">40%</option>
+                  <option value="50%">50%</option>
+                </select>
+              </div>
+              <div class="field"><label for="pr-dp">Distributor price (auto)</label><input id="pr-dp" name="distPrice" type="number" step="0.01" readonly /></div>
+            </div>
+            <button type="submit" class="btn-secondary">Add to price list</button>
+          </form>
+        </div>
       </section>
 
       <!-- LEDGER -->
