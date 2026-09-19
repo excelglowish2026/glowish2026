@@ -65,11 +65,14 @@
   function renderTable() {
     const rows = allRows.filter((r) => r.Month === activeMonth);
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No records for ' + escapeHtml(activeMonth) + ' yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No records for ' + escapeHtml(activeMonth) + ' yet.</td></tr>';
       return;
     }
-    tbody.innerHTML = rows.map((r) => `
+    // Newest date first within the month, so recent entries surface at top.
+    const sorted = [...rows].sort((a, b) => String(b.Date || '').localeCompare(String(a.Date || '')));
+    tbody.innerHTML = sorted.map((r) => `
       <tr>
+        <td>${fmtDate(r.Date)}</td>
         <td>${escapeHtml(r.Name)}</td>
         <td>${fmtDate(r.Birthdate)}</td>
         <td>${escapeHtml(r.Address)}</td>
@@ -97,9 +100,10 @@
         <p class="status-line" id="form-status-insurance"></p>
         <div class="form-grid">
           <div class="field">
-            <label for="f-insurance-Month">Month</label>
+            <label for="f-insurance-Month">Month tab</label>
             <select id="f-insurance-Month" name="Month" required>${monthOptions}</select>
           </div>
+          <div class="field"><label for="f-insurance-Date">Date</label><input id="f-insurance-Date" name="Date" type="date" required /></div>
           <div class="field wide"><label for="f-insurance-Name">Name</label><input id="f-insurance-Name" name="Name" required /></div>
           <div class="field"><label for="f-insurance-Birthdate">Birthdate</label><input id="f-insurance-Birthdate" name="Birthdate" type="date" /></div>
           <div class="field wide"><label for="f-insurance-Address">Address</label><input id="f-insurance-Address" name="Address" /></div>
@@ -114,6 +118,18 @@
     const form = document.getElementById('form-insurance');
     form.addEventListener('submit', handleSubmit);
     document.getElementById('cancel-edit-insurance').addEventListener('click', resetForm);
+
+    // Picking a date auto-jumps the Month dropdown to match it (e.g. a date
+    // of 05-28-26 selects "May"), but it stays a normal dropdown so it can
+    // still be overridden by hand if a record needs to sit in a different tab.
+    form.elements['Date'].addEventListener('change', () => {
+      const val = form.elements['Date'].value;
+      if (!val) return;
+      const monthIndex = parseInt(val.split('-')[1], 10) - 1;
+      if (monthIndex >= 0 && monthIndex < 12) {
+        form.elements['Month'].value = MONTHS[monthIndex];
+      }
+    });
   }
 
   async function handleSubmit(e) {
@@ -124,6 +140,7 @@
 
     const data = {
       Month: form.elements['Month'].value,
+      Date: form.elements['Date'].value,
       Name: form.elements['Name'].value.trim(),
       Birthdate: form.elements['Birthdate'].value,
       Address: form.elements['Address'].value.trim(),
@@ -153,6 +170,7 @@
     if (!rowObj) return;
     const form = document.getElementById('form-insurance');
     form.elements['Month'].value = rowObj.Month;
+    form.elements['Date'].value = rowObj.Date ? String(rowObj.Date).slice(0, 10) : '';
     form.elements['Name'].value = rowObj.Name || '';
     form.elements['Birthdate'].value = rowObj.Birthdate ? String(rowObj.Birthdate).slice(0, 10) : '';
     form.elements['Address'].value = rowObj.Address || '';
@@ -168,6 +186,7 @@
     const form = document.getElementById('form-insurance');
     form.reset();
     form.elements['Month'].value = activeMonth;
+    form.elements['Date'].value = '';
     form.dataset.editRow = '';
     document.getElementById('form-title-insurance').textContent = 'Add record';
     form.querySelector('button[type="submit"]').textContent = 'Add record';
@@ -188,7 +207,7 @@
   function exportCsv() {
     const rows = allRows.filter((r) => r.Month === activeMonth);
     if (!rows.length) { window.alert('Nothing to export for ' + activeMonth + '.'); return; }
-    const headers = ['Month', 'Name', 'Birthdate', 'Address', 'Remarks'];
+    const headers = ['Month', 'Date', 'Name', 'Birthdate', 'Address', 'Remarks'];
     const lines = [headers.join(',')];
     rows.forEach((r) => {
       lines.push(headers.map((h) => csvEscape(r[h])).join(','));
