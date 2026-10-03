@@ -7,12 +7,23 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
   SESSION = JSON.parse(raw);
+  if (SESSION.role === 'admin' || SESSION.role === 'owner') {
+    window.location.href = 'admin-dashboard.html';
+    return;
+  }
   SESSION.allStores = String(SESSION.store || '').trim().toUpperCase() === 'ALL';
 
   document.getElementById('store-name').textContent = SESSION.allStores
     ? 'All stores'
     : (SESSION.store || 'Unknown store');
   document.getElementById('store-region').textContent = SESSION.region || '';
+
+  // Weekly Collection and Rice Collection are only for staff who cover
+  // every store in their region (Credentials Store = ALL).
+  const wcTab = document.getElementById('tab-weeklycollection');
+  const rcTab = document.getElementById('tab-ricecollection');
+  if (wcTab) wcTab.hidden = !SESSION.allStores;
+  if (rcTab) rcTab.hidden = !SESSION.allStores;
 
   if (!apiConfigured()) {
     document.getElementById('config-banner').hidden = false;

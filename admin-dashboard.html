@@ -35,6 +35,8 @@
       <button class="tab" data-target="panel-inventory">Inventory</button>
       <button class="tab" data-target="panel-collectibles">Collectibles</button>
       <button class="tab" data-target="panel-reports">Reports</button>
+      <button class="tab" data-target="panel-weeklycollection">Weekly Collection</button>
+      <button class="tab" data-target="panel-ricecollection">Rice Collection</button>
       <button class="tab" data-target="panel-insurance" id="tab-insurance" hidden>Insurance</button>
     </nav>
 
@@ -223,6 +225,105 @@
         </div>
       </section>
 
+      <!-- WEEKLY COLLECTION -->
+      <section class="page-panel" id="panel-weeklycollection">
+        <div class="panel-head">
+          <h2 class="panel-title">Weekly Collection</h2>
+        </div>
+
+        <div class="report-controls">
+          <div class="field"><label for="awc-week-date">Any date in the week</label><input type="date" id="awc-week-date" /></div>
+          <button type="button" class="btn-secondary" id="awc-load-week">Load week</button>
+          <span class="report-range-label" id="awc-week-label"></span>
+        </div>
+
+        <div class="kpi-grid" id="awc-summary-grid" style="margin-bottom: 22px;"></div>
+
+        <div class="segmented">
+          <input type="radio" name="awc-view" id="awc-view-collections" value="collections" checked />
+          <label for="awc-view-collections">Collections</label>
+          <input type="radio" name="awc-view" id="awc-view-expenses" value="expenses" />
+          <label for="awc-view-expenses">Expenses</label>
+        </div>
+
+        <!-- COLLECTIONS -->
+        <div id="awc-collections-view">
+          <p class="status-line" id="awc-collections-status"></p>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Distributor</th><th>Amount</th><th>Contact person</th><th>Contact no.</th><th>Remarks</th><th>Actions</th></tr></thead>
+              <tbody id="awc-collections-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager-awc-collections" hidden></div>
+          <div class="form-container" id="form-container-awc-collections"></div>
+        </div>
+
+        <!-- EXPENSES -->
+        <div id="awc-expenses-view" hidden>
+          <p class="status-line" id="awc-expenses-status"></p>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Particular</th><th>Amount</th><th>Actions</th></tr></thead>
+              <tbody id="awc-expenses-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager-awc-expenses" hidden></div>
+          <div class="form-container" id="form-container-awc-expenses"></div>
+        </div>
+
+        <div class="report-block">
+          <div class="report-block-head"><h3>Export</h3></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="refresh-btn" id="awc-export-week-csv">Export this week (CSV)</button>
+            <button type="button" class="refresh-btn" id="awc-export-week-pdf">Export this week (PDF)</button>
+            <button type="button" class="refresh-btn" id="awc-export-month-csv">Export this month (CSV)</button>
+            <button type="button" class="refresh-btn" id="awc-export-month-pdf">Export this month (PDF)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RICE COLLECTION -->
+      <section class="page-panel" id="panel-ricecollection">
+        <div class="panel-head">
+          <h2 class="panel-title">Rice Collection</h2>
+        </div>
+
+        <div class="report-controls">
+          <div class="field"><label for="arc-week-date">Any date in the week</label><input type="date" id="arc-week-date" /></div>
+          <button type="button" class="btn-secondary" id="arc-load-week">Load week</button>
+          <span class="report-range-label" id="arc-week-label"></span>
+        </div>
+
+        <div class="warehouse-tab-bar" id="arc-municipality-tabs"></div>
+        <button type="button" class="add-warehouse-btn" id="add-municipality-btn">+ Add municipality</button>
+        <p class="panel-meta" id="arc-municipality-meta"></p>
+
+        <p class="status-line" id="arc-status"></p>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead><tr><th>Region</th><th>Date</th><th>Name</th><th>Address</th><th>Balance</th><th>Actions</th></tr></thead>
+            <tbody id="arc-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="pager-arc" hidden></div>
+        <div class="form-container" id="form-container-arc"></div>
+
+        <div class="report-block">
+          <div class="report-block-head"><h3>District Summary (this week, all regions)</h3></div>
+          <div class="table-scroll">
+            <table class="ledger-table">
+              <thead><tr><th>Region</th><th>Province</th><th>District</th><th>Municipality</th><th>Total balance</th></tr></thead>
+              <tbody id="arc-summary-tbody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <button type="button" class="refresh-btn" id="arc-export-csv">Export summary (CSV)</button>
+            <button type="button" class="refresh-btn" id="arc-export-pdf">Export summary (PDF)</button>
+          </div>
+        </div>
+      </section>
+
       <!-- INSURANCE (owner only) -->
       <section class="page-panel" id="panel-insurance">
         <div class="panel-head">
@@ -251,9 +352,13 @@
   <script src="js/api.js"></script>
   <script src="js/pagination.js"></script>
   <script src="js/modal.js"></script>
+  <script src="js/weekmath.js"></script>
+  <script src="js/export-utils.js"></script>
   <script src="js/admin-dashboard.js"></script>
   <script src="js/admin-crud.js"></script>
   <script src="js/admin-reports.js"></script>
   <script src="js/admin-insurance.js"></script>
+  <script src="js/admin-weekly-collection.js"></script>
+  <script src="js/admin-rice-collection.js"></script>
 </body>
 </html>
