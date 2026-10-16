@@ -6,14 +6,14 @@
   <title>Under Maintenance — Glowish Tracker</title>
   <style>
     :root {
-      --bg: #f6f3ee;
+      --bg: #f1f6f2;
       --card: #ffffff;
-      --ink: #2b2620;
-      --muted: #7a7166;
-      --accent: #c8953f;
-      --accent-2: #e8c27a;
-      --track: #efe8dc;
-      --border: #e4dccf;
+      --ink: #1f2a23;
+      --muted: #66766c;
+      --accent: #2f9e5b;
+      --accent-2: #7fd6a0;
+      --track: #dcefe3;
+      --border: #d3e6da;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -22,7 +22,7 @@
       align-items: center;
       justify-content: center;
       padding: 24px 16px;
-      background: radial-gradient(circle at 20% 10%, #fff8ea 0%, var(--bg) 55%);
+      background: radial-gradient(circle at 20% 10%, #eefaf2 0%, var(--bg) 55%);
       color: var(--ink);
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
@@ -35,7 +35,7 @@
       border-radius: 18px;
       padding: 40px 32px 32px;
       text-align: center;
-      box-shadow: 0 20px 50px -20px rgba(80, 60, 30, 0.25);
+      box-shadow: 0 20px 50px -20px rgba(30, 90, 50, 0.22);
     }
     .logo { max-width: 72px; margin: 0 auto 12px; display: block; }
     .eyebrow {
@@ -46,8 +46,8 @@
     .status {
       display: inline-flex; align-items: center; gap: 8px;
       margin: 14px 0 22px; padding: 6px 12px;
-      background: #fff6e3; color: #8a6420;
-      border: 1px solid #f1dfb8; border-radius: 999px;
+      background: #e7f6ec; color: #1f6b3d;
+      border: 1px solid #bfe5cc; border-radius: 999px;
       font-size: 12px; font-weight: 600;
     }
     .pulse {
@@ -77,7 +77,7 @@
 
     .notice {
       text-align: left;
-      background: #fbf7ef;
+      background: #f3faf5;
       border: 1px solid var(--border);
       border-left: 3px solid var(--accent);
       border-radius: 10px;
@@ -85,7 +85,7 @@
       font-size: 13px; line-height: 1.55; color: var(--ink);
       margin-bottom: 24px;
     }
-    .notice b { color: #8a6420; }
+    .notice b { color: #1f6b3d; }
 
     /* Progress */
     .progress-head {
@@ -113,7 +113,7 @@
       font-size: 12px; color: var(--muted);
     }
 
-    @keyframes fill { to { width: 95%; } }
+    @keyframes fill { to { width: 97%; } }
     @keyframes shimmer { to { background-position: -200% 0; } }
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     @keyframes rise {
@@ -127,7 +127,7 @@
     @media (max-width: 420px) { .card { padding: 32px 20px 24px; } h1 { font-size: 21px; } }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
-      .bar { width: 93%; }
+      .bar { width: 97%; }
     }
   </style>
 </head>
@@ -143,8 +143,8 @@
       <span class="packet"></span><span class="packet"></span><span class="packet"></span>
       <svg class="cloud" viewBox="0 0 120 90" fill="none">
         <path d="M34 70h52a20 20 0 0 0 2-39.9A28 28 0 0 0 34.6 24 23 23 0 0 0 34 70z"
-              fill="#fff6e3" stroke="#c8953f" stroke-width="3" stroke-linejoin="round"/>
-        <path d="M60 60V38M50 47l10-10 10 10" stroke="#c8953f" stroke-width="3.5"
+              fill="#e7f6ec" stroke="#2f9e5b" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M60 60V38M50 47l10-10 10 10" stroke="#2f9e5b" stroke-width="3.5"
               stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
@@ -163,20 +163,20 @@
 
     <div class="progress-head">
       <span>Finalizing database<span class="dots"></span></span>
-      <strong>95%</strong>
+      <strong>97%</strong>
     </div>
-    <div class="track" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" aria-label="Upload progress">
+    <div class="track" role="progressbar" aria-valuenow="97" aria-valuemin="0" aria-valuemax="100" aria-label="Upload progress">
       <div class="bar"></div>
     </div>
-    <p class="eta">Estimated to finish <b>within today</b><span id="tomorrow"></span></p>
+    <p class="eta">Estimated to be fully published <b>tonight, before midnight</b><span id="deadline"></span></p>
 
     <p class="foot">Thank you for your patience and understanding. Please check back later.</p>
   </main>
 
   <script>
     try {
-      var d = new Date(2026, 9, 16, 15, 0, 0);
-      document.getElementById("tomorrow").textContent = " — " + d.toLocaleString("en-PH", {
+      var d = new Date(2026, 9, 16, 23, 59, 0);
+      document.getElementById("deadline").textContent = " — " + d.toLocaleString("en-PH", {
         month: "long",
         day: "numeric",
         year: "numeric",
