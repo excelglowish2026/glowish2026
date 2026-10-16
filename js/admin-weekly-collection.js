@@ -277,16 +277,82 @@
     el.classList.toggle('error', !!isError);
   }
 
-  // ---- Export ----
-  document.getElementById('awc-export-week-csv').addEventListener('click', () => exportIt('csv', currentWeek.start, currentWeek.end, formatWeekLabel(currentWeek), 'week-' + toDateKey(currentWeek.start)));
-  document.getElementById('awc-export-week-pdf').addEventListener('click', () => exportIt('pdf', currentWeek.start, currentWeek.end, formatWeekLabel(currentWeek), 'week-' + toDateKey(currentWeek.start)));
-  document.getElementById('awc-export-month-csv').addEventListener('click', () => {
-    const b = monthBoundsFor(weekDateInput.value);
-    exportIt('csv', b.start, b.end, formatMonthLabel(b), 'month-' + toDateKey(b.start).slice(0, 7));
+  // ---- Generate Report (any week or any month, not just the one loaded above) ----
+  const reportModeRadios = document.querySelectorAll('input[name="awc-report-mode"]');
+  const reportWeekField = document.getElementById('awc-report-week-field');
+  const reportMonthField = document.getElementById('awc-report-month-field');
+  const reportWeekDateInput = document.getElementById('awc-report-week-date');
+  const reportMonthInput = document.getElementById('awc-report-month');
+  const reportRangeLabel = document.getElementById('awc-report-range-label');
+  const reportContainer = document.getElementById('awc-report-container');
+  const reportExportActions = document.getElementById('awc-report-export-actions');
+  let lastRange = null;
+
+  reportModeRadios.forEach((r) => {
+    r.addEventListener('change', () => {
+      const byWeek = document.querySelector('input[name="awc-report-mode"]:checked').value === 'week';
+      reportWeekField.hidden = !byWeek;
+      reportMonthField.hidden = byWeek;
+    });
   });
-  document.getElementById('awc-export-month-pdf').addEventListener('click', () => {
-    const b = monthBoundsFor(weekDateInput.value);
-    exportIt('pdf', b.start, b.end, formatMonthLabel(b), 'month-' + toDateKey(b.start).slice(0, 7));
+
+  document.getElementById('awc-report-generate').addEventListener('click', generateReport);
+
+  function generateReport() {
+    const byWeek = document.querySelector('input[name="awc-report-mode"]:checked').value === 'week';
+    let range, label, filenameBase;
+    if (byWeek) {
+      if (!reportWeekDateInput.value) reportWeekDateInput.value = toDateKey(new Date());
+      range = mondaySaturdayWeek(reportWeekDateInput.value);
+      label = formatWeekLabel(range);
+      filenameBase = 'week-' + toDateKey(range.start);
+    } else {
+      if (!reportMonthInput.value) reportMonthInput.value = toDateKey(new Date()).slice(0, 7);
+      range = monthBoundsFor(reportMonthInput.value + '-01');
+      label = formatMonthLabel(range);
+      filenameBase = 'month-' + toDateKey(range.start).slice(0, 7);
+    }
+    const collRows = dataLoaded.WeeklyCollection.filter((r) => dateInRange(r.Date, range.start, range.end));
+    const expRows = dataLoaded.WeeklyExpenses.filter((r) => dateInRange(r.Date, range.start, range.end));
+    reportRangeLabel.textContent = label;
+    reportContainer.innerHTML = renderReportPreview(collRows, expRows);
+    reportExportActions.hidden = false;
+    lastRange = { start: range.start, end: range.end, rangeLabel: label, filenameBase };
+  }
+
+  function renderReportPreview(collRows, expRows) {
+    const totalColl = collRows.reduce((s, r) => s + (parseFloat(r.Amount) || 0), 0);
+    const totalExp = expRows.reduce((s, r) => s + (parseFloat(r.Amount) || 0), 0);
+    return `
+      <div class="table-scroll">
+        <table class="ledger-table">
+          <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Distributor</th><th>Amount</th><th>Contact person</th><th>Contact no.</th><th>Remarks</th></tr></thead>
+          <tbody>
+            ${collRows.length ? collRows.map((r) => `<tr><td><span class="region-pill">${escapeHtml(r.Region)}</span></td><td>${escapeHtml(r.Store)}</td><td>${fmtDate(r.Date)}</td><td>${escapeHtml(r.DistributorName)}</td><td class="num">${escapeHtml(r.Amount)}</td><td>${escapeHtml(r.ContactPerson)}</td><td>${escapeHtml(r.ContactNo)}</td><td>${escapeHtml(r.Remarks)}</td></tr>`).join('') : '<tr><td colspan="8" class="empty-row">No collections in this range.</td></tr>'}
+            <tr class="totals-row"><td colspan="4">Total</td><td class="num">${escapeHtml(totalColl.toFixed(2))}</td><td colspan="3"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-scroll" style="margin-top:16px;">
+        <table class="ledger-table">
+          <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Particular</th><th>Amount</th></tr></thead>
+          <tbody>
+            ${expRows.length ? expRows.map((r) => `<tr><td><span class="region-pill">${escapeHtml(r.Region)}</span></td><td>${escapeHtml(r.Store)}</td><td>${fmtDate(r.Date)}</td><td>${escapeHtml(r.Particular)}</td><td class="num">${escapeHtml(r.Amount)}</td></tr>`).join('') : '<tr><td colspan="5" class="empty-row">No expenses in this range.</td></tr>'}
+            <tr class="totals-row"><td colspan="3">Total</td><td></td><td class="num">${escapeHtml(totalExp.toFixed(2))}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="overall-total-box">NET (collections − expenses): ${escapeHtml((totalColl - totalExp).toFixed(2))}</div>
+    `;
+  }
+
+  document.getElementById('awc-report-export-csv').addEventListener('click', () => {
+    if (!lastRange) return;
+    exportIt('csv', lastRange.start, lastRange.end, lastRange.rangeLabel, lastRange.filenameBase);
+  });
+  document.getElementById('awc-report-export-pdf').addEventListener('click', () => {
+    if (!lastRange) return;
+    exportIt('pdf', lastRange.start, lastRange.end, lastRange.rangeLabel, lastRange.filenameBase);
   });
 
   function exportIt(format, start, end, rangeLabel, filenameBase) {

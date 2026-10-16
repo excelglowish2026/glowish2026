@@ -216,20 +216,82 @@
     return { form, load, render, rowsInWeek, rowsInRange };
   }
 
-  // ---- Export ----
-  document.getElementById('wc-export-week-csv').addEventListener('click', () => {
-    exportCollections(collectionsModule.rowsInWeek(), expensesModule.rowsInWeek(), 'week-' + toDateKey(currentWeek.start), formatWeekLabel(currentWeek), 'csv');
+  // ---- Generate Report (any week or any month, not just the one loaded above) ----
+  const reportModeRadios = document.querySelectorAll('input[name="wc-report-mode"]');
+  const reportWeekField = document.getElementById('wc-report-week-field');
+  const reportMonthField = document.getElementById('wc-report-month-field');
+  const reportWeekDateInput = document.getElementById('wc-report-week-date');
+  const reportMonthInput = document.getElementById('wc-report-month');
+  const reportRangeLabel = document.getElementById('wc-report-range-label');
+  const reportContainer = document.getElementById('wc-report-container');
+  const reportExportActions = document.getElementById('wc-report-export-actions');
+  let lastReport = null;
+
+  reportModeRadios.forEach((r) => {
+    r.addEventListener('change', () => {
+      const byWeek = document.querySelector('input[name="wc-report-mode"]:checked').value === 'week';
+      reportWeekField.hidden = !byWeek;
+      reportMonthField.hidden = byWeek;
+    });
   });
-  document.getElementById('wc-export-week-pdf').addEventListener('click', () => {
-    exportCollections(collectionsModule.rowsInWeek(), expensesModule.rowsInWeek(), 'week-' + toDateKey(currentWeek.start), formatWeekLabel(currentWeek), 'pdf');
+
+  document.getElementById('wc-report-generate').addEventListener('click', generateReport);
+
+  function generateReport() {
+    const byWeek = document.querySelector('input[name="wc-report-mode"]:checked').value === 'week';
+    let range, label, filenameBase;
+    if (byWeek) {
+      if (!reportWeekDateInput.value) { reportWeekDateInput.value = toDateKey(new Date()); }
+      range = mondaySaturdayWeek(reportWeekDateInput.value);
+      label = formatWeekLabel(range);
+      filenameBase = 'week-' + toDateKey(range.start);
+    } else {
+      if (!reportMonthInput.value) { reportMonthInput.value = toDateKey(new Date()).slice(0, 7); }
+      range = monthBoundsFor(reportMonthInput.value + '-01');
+      label = formatMonthLabel(range);
+      filenameBase = 'month-' + toDateKey(range.start).slice(0, 7);
+    }
+    const collRows = collectionsModule.rowsInRange(range.start, range.end);
+    const expRows = expensesModule.rowsInRange(range.start, range.end);
+    reportRangeLabel.textContent = label;
+    reportContainer.innerHTML = renderReportPreview(collRows, expRows);
+    reportExportActions.hidden = false;
+    lastReport = { collRows, expRows, filenameBase, rangeLabel: label };
+  }
+
+  function renderReportPreview(collRows, expRows) {
+    const totalColl = sumAmounts(collRows);
+    const totalExp = sumAmounts(expRows);
+    return `
+      <div class="table-scroll">
+        <table class="ledger-table">
+          <thead><tr><th>Date</th><th>Distributor</th><th>Amount</th><th>Contact person</th><th>Contact no.</th><th>Remarks</th></tr></thead>
+          <tbody>
+            ${collRows.length ? collRows.map((r) => `<tr><td>${fmtDate(r.Date)}</td><td>${escapeHtml(r.DistributorName)}</td><td class="num">${escapeHtml(r.Amount)}</td><td>${escapeHtml(r.ContactPerson)}</td><td>${escapeHtml(r.ContactNo)}</td><td>${escapeHtml(r.Remarks)}</td></tr>`).join('') : '<tr><td colspan="6" class="empty-row">No collections in this range.</td></tr>'}
+            <tr class="totals-row"><td colspan="2">Total</td><td class="num">${escapeHtml(totalColl.toFixed(2))}</td><td colspan="3"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-scroll" style="margin-top:16px;">
+        <table class="ledger-table">
+          <thead><tr><th>Date</th><th>Particular</th><th>Amount</th></tr></thead>
+          <tbody>
+            ${expRows.length ? expRows.map((r) => `<tr><td>${fmtDate(r.Date)}</td><td>${escapeHtml(r.Particular)}</td><td class="num">${escapeHtml(r.Amount)}</td></tr>`).join('') : '<tr><td colspan="3" class="empty-row">No expenses in this range.</td></tr>'}
+            <tr class="totals-row"><td>Total</td><td></td><td class="num">${escapeHtml(totalExp.toFixed(2))}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="overall-total-box">NET (collections − expenses): ${escapeHtml((totalColl - totalExp).toFixed(2))}</div>
+    `;
+  }
+
+  document.getElementById('wc-report-export-csv').addEventListener('click', () => {
+    if (!lastReport) return;
+    exportCollections(lastReport.collRows, lastReport.expRows, lastReport.filenameBase, lastReport.rangeLabel, 'csv');
   });
-  document.getElementById('wc-export-month-csv').addEventListener('click', () => {
-    const bounds = monthBoundsFor(weekDateInput.value);
-    exportCollections(collectionsModule.rowsInRange(bounds.start, bounds.end), expensesModule.rowsInRange(bounds.start, bounds.end), 'month-' + toDateKey(bounds.start).slice(0, 7), formatMonthLabel(bounds), 'csv');
-  });
-  document.getElementById('wc-export-month-pdf').addEventListener('click', () => {
-    const bounds = monthBoundsFor(weekDateInput.value);
-    exportCollections(collectionsModule.rowsInRange(bounds.start, bounds.end), expensesModule.rowsInRange(bounds.start, bounds.end), 'month-' + toDateKey(bounds.start).slice(0, 7), formatMonthLabel(bounds), 'pdf');
+  document.getElementById('wc-report-export-pdf').addEventListener('click', () => {
+    if (!lastReport) return;
+    exportCollections(lastReport.collRows, lastReport.expRows, lastReport.filenameBase, lastReport.rangeLabel, 'pdf');
   });
 
   function exportCollections(collRows, expRows, filenameBase, rangeLabel, format) {

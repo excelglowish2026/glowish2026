@@ -275,12 +275,29 @@
         </div>
 
         <div class="report-block">
-          <div class="report-block-head"><h3>Export</h3></div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" class="refresh-btn" id="awc-export-week-csv">Export this week (CSV)</button>
-            <button type="button" class="refresh-btn" id="awc-export-week-pdf">Export this week (PDF)</button>
-            <button type="button" class="refresh-btn" id="awc-export-month-csv">Export this month (CSV)</button>
-            <button type="button" class="refresh-btn" id="awc-export-month-pdf">Export this month (PDF)</button>
+          <div class="report-block-head"><h3>Generate Report</h3></div>
+          <div class="segmented">
+            <input type="radio" name="awc-report-mode" id="awc-report-mode-week" value="week" checked />
+            <label for="awc-report-mode-week">By week</label>
+            <input type="radio" name="awc-report-mode" id="awc-report-mode-month" value="month" />
+            <label for="awc-report-mode-month">By month</label>
+          </div>
+          <div class="report-controls">
+            <div class="field" id="awc-report-week-field">
+              <label for="awc-report-week-date">Any date in the week</label>
+              <input type="date" id="awc-report-week-date" />
+            </div>
+            <div class="field" id="awc-report-month-field" hidden>
+              <label for="awc-report-month">Month</label>
+              <input type="month" id="awc-report-month" />
+            </div>
+            <button type="button" class="btn-secondary" id="awc-report-generate">Generate report</button>
+            <span class="report-range-label" id="awc-report-range-label"></span>
+          </div>
+          <div id="awc-report-container"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;" id="awc-report-export-actions" hidden>
+            <button type="button" class="refresh-btn" id="awc-report-export-csv">Export report (CSV)</button>
+            <button type="button" class="refresh-btn" id="awc-report-export-pdf">Export report (PDF)</button>
           </div>
         </div>
       </section>

@@ -304,12 +304,29 @@
         </div>
 
         <div class="report-block">
-          <div class="report-block-head"><h3>Export</h3></div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" class="refresh-btn" id="wc-export-week-csv">Export this week (CSV)</button>
-            <button type="button" class="refresh-btn" id="wc-export-week-pdf">Export this week (PDF)</button>
-            <button type="button" class="refresh-btn" id="wc-export-month-csv">Export this month (CSV)</button>
-            <button type="button" class="refresh-btn" id="wc-export-month-pdf">Export this month (PDF)</button>
+          <div class="report-block-head"><h3>Generate Report</h3></div>
+          <div class="segmented">
+            <input type="radio" name="wc-report-mode" id="wc-report-mode-week" value="week" checked />
+            <label for="wc-report-mode-week">By week</label>
+            <input type="radio" name="wc-report-mode" id="wc-report-mode-month" value="month" />
+            <label for="wc-report-mode-month">By month</label>
+          </div>
+          <div class="report-controls">
+            <div class="field" id="wc-report-week-field">
+              <label for="wc-report-week-date">Any date in the week</label>
+              <input type="date" id="wc-report-week-date" />
+            </div>
+            <div class="field" id="wc-report-month-field" hidden>
+              <label for="wc-report-month">Month</label>
+              <input type="month" id="wc-report-month" />
+            </div>
+            <button type="button" class="btn-secondary" id="wc-report-generate">Generate report</button>
+            <span class="report-range-label" id="wc-report-range-label"></span>
+          </div>
+          <div id="wc-report-container"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;" id="wc-report-export-actions" hidden>
+            <button type="button" class="refresh-btn" id="wc-report-export-csv">Export report (CSV)</button>
+            <button type="button" class="refresh-btn" id="wc-report-export-pdf">Export report (PDF)</button>
           </div>
         </div>
       </section>
