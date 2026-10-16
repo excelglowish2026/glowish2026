@@ -2,7 +2,7 @@ let SESSION = null;
 
 // Holds the merged (all-region) rows for each sheet, loaded once on page
 // load and reused by every tab, the search boxes, and the reports tab.
-let ADMIN_DATA = { RegularPrice: [], PromoRates: [], Ledger: [], Inventory: [], Collectibles: [] };
+let ADMIN_DATA = { RegularPrice: [], PromoRates: [], Ledger: [], Inventory: [], Collectibles: [], WeeklyCollection: [], WeeklyExpenses: [] };
 
 let WAREHOUSES = [];
 let activeWarehouse = null;
@@ -242,12 +242,14 @@ async function loadAllData() {
   if (!apiConfigured()) return;
   setLoadState(true);
   try {
-    const [rp, pr, lg, inv, cl, wh] = await Promise.all([
+    const [rp, pr, lg, inv, cl, wc, we, wh] = await Promise.all([
       apiGet({ action: 'getAllData', sheet: 'RegularPrice' }),
       apiGet({ action: 'getAllData', sheet: 'PromoRates' }),
       apiGet({ action: 'getAllData', sheet: 'Ledger' }),
       apiGet({ action: 'getAllData', sheet: 'Inventory' }),
       apiGet({ action: 'getAllData', sheet: 'Collectibles' }),
+      apiGet({ action: 'getAllData', sheet: 'WeeklyCollection' }),
+      apiGet({ action: 'getAllData', sheet: 'WeeklyExpenses' }),
       apiGet({ action: 'getWarehouses' })
     ]);
     ADMIN_DATA = {
@@ -255,7 +257,9 @@ async function loadAllData() {
       PromoRates: pr.success ? pr.rows : [],
       Ledger: lg.success ? lg.rows : [],
       Inventory: inv.success ? inv.rows : [],
-      Collectibles: cl.success ? cl.rows : []
+      Collectibles: cl.success ? cl.rows : [],
+      WeeklyCollection: wc.success ? wc.rows : [],
+      WeeklyExpenses: we.success ? we.rows : []
     };
     WAREHOUSES = wh.success ? wh.warehouses : [];
     if (!activeWarehouse || !WAREHOUSES.includes(activeWarehouse)) {
@@ -385,6 +389,9 @@ function renderOverview() {
   const totalCollectibles = sumValues(ADMIN_DATA.Collectibles.map((r) => r.Balance));
   const distinctItems = new Set(ADMIN_DATA.Inventory.map((r) => r.ItemName).filter(Boolean));
   const lowStockCount = lowStockEntries().length;
+  const totalWeeklyCollection = sumValues(ADMIN_DATA.WeeklyCollection.map((r) => r.Amount));
+  const totalWeeklyExpenses = sumValues(ADMIN_DATA.WeeklyExpenses.map((r) => r.Amount));
+  const netIncome = totalWeeklyCollection - totalWeeklyExpenses;
 
   const kpis = [
     { label: 'Active stores', value: stores.length, sub: REGIONS.length + ' regions' },
@@ -392,7 +399,10 @@ function renderOverview() {
     { label: 'Outstanding ledger balance', value: formatMoney(totalLedgerBalance), sub: 'across all stores' },
     { label: 'Outstanding collectibles', value: formatMoney(totalCollectibles), sub: ADMIN_DATA.Collectibles.length + ' records' },
     { label: 'Inventory items tracked', value: distinctItems.size, sub: ADMIN_DATA.Inventory.length + ' entries' },
-    { label: 'Low stock items', value: lowStockCount, sub: 'below 10 units — click to view', id: 'kpi-low-stock' }
+    { label: 'Low stock items', value: lowStockCount, sub: 'below 10 units — click to view', id: 'kpi-low-stock' },
+    { label: 'Weekly collection total', value: formatMoney(totalWeeklyCollection), sub: ADMIN_DATA.WeeklyCollection.length + ' entries, all-time' },
+    { label: 'Weekly collection expenses', value: formatMoney(totalWeeklyExpenses), sub: ADMIN_DATA.WeeklyExpenses.length + ' entries, all-time' },
+    { label: 'Net income', value: formatMoney(netIncome), sub: 'collection − expenses' }
   ];
 
   document.getElementById('kpi-grid').innerHTML = kpis.map((k) => `

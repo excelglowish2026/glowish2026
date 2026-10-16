@@ -8,6 +8,7 @@
 
   let currentWeek = mondaySaturdayWeek();
   let dataLoaded = { WeeklyCollection: [], WeeklyExpenses: [] };
+  const searchTerms = { WeeklyCollection: '', WeeklyExpenses: '' };
 
   document.addEventListener('DOMContentLoaded', () => {
     if (!weekDateInput.value) weekDateInput.value = toDateKey(new Date());
@@ -29,6 +30,23 @@
         document.getElementById('awc-expenses-view').hidden = showCollections;
       });
     });
+
+    const searchCollectionsInput = document.getElementById('awc-search-collections');
+    if (searchCollectionsInput) {
+      searchCollectionsInput.addEventListener('input', () => {
+        searchTerms.WeeklyCollection = searchCollectionsInput.value.trim().toLowerCase();
+        currentPages.WeeklyCollection = 1;
+        renderTable(collectionsCfg);
+      });
+    }
+    const searchExpensesInput = document.getElementById('awc-search-expenses');
+    if (searchExpensesInput) {
+      searchExpensesInput.addEventListener('input', () => {
+        searchTerms.WeeklyExpenses = searchExpensesInput.value.trim().toLowerCase();
+        currentPages.WeeklyExpenses = 1;
+        renderTable(expensesCfg);
+      });
+    }
 
     document.addEventListener('admin-data:loaded', fetchAndRender);
   });
@@ -121,10 +139,14 @@
   function renderTable(cfg) {
     const tbody = document.getElementById(cfg.tbody);
     const pagerEl = document.getElementById(cfg.pager);
-    const rows = dataLoaded[cfg.sheet].filter((r) => dateInWeek(r.Date, currentWeek));
+    const term = searchTerms[cfg.sheet];
+    let rows = dataLoaded[cfg.sheet].filter((r) => dateInWeek(r.Date, currentWeek));
+    if (term) {
+      rows = rows.filter((r) => Object.values(r).some((v) => String(v ?? '').toLowerCase().includes(term)));
+    }
 
     if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="${cfg.colspan}" class="empty-row">No entries for this week.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="${cfg.colspan}" class="empty-row">${term ? 'No entries match your search.' : 'No entries for this week.'}</td></tr>`;
       pagerEl.hidden = true;
       return;
     }

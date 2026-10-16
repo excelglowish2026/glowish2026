@@ -85,6 +85,7 @@
     pagerId: 'pager-wc-collections',
     formId: 'wc-collections-form',
     statusId: 'wc-collections-status',
+    searchId: 'wc-search-collections',
     colspan: 6,
     renderRow: (r) => `
       <tr>
@@ -114,6 +115,7 @@
     pagerId: 'pager-wc-expenses',
     formId: 'wc-expenses-form',
     statusId: 'wc-expenses-status',
+    searchId: 'wc-search-expenses',
     colspan: 3,
     renderRow: (r) => `
       <tr>
@@ -135,9 +137,24 @@
     const pagerEl = document.getElementById(cfg.pagerId);
     const form = document.getElementById(cfg.formId);
     const statusEl = document.getElementById(cfg.statusId);
+    const searchInput = cfg.searchId ? document.getElementById(cfg.searchId) : null;
 
     let allRows = [];
     let currentPage = 1;
+    let searchTerm = '';
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        searchTerm = searchInput.value.trim().toLowerCase();
+        currentPage = 1;
+        render();
+      });
+    }
+
+    function matchesSearch(r) {
+      if (!searchTerm) return true;
+      return Object.values(r).some((v) => String(v ?? '').toLowerCase().includes(searchTerm));
+    }
 
     async function load() {
       if (!apiConfigured()) return;
@@ -163,9 +180,9 @@
     }
 
     function render() {
-      const rows = rowsInWeek();
+      const rows = rowsInWeek().filter(matchesSearch);
       if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="${cfg.colspan}" class="empty-row">No entries for this week.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${cfg.colspan}" class="empty-row">${searchTerm ? 'No entries match your search.' : 'No entries for this week.'}</td></tr>`;
         pagerEl.hidden = true;
         return;
       }

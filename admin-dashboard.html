@@ -249,6 +249,7 @@
         <!-- COLLECTIONS -->
         <div id="awc-collections-view">
           <p class="status-line" id="awc-collections-status"></p>
+          <div class="search-box"><input type="text" id="awc-search-collections" placeholder="Search collections…" /></div>
           <div class="table-scroll">
             <table class="ledger-table">
               <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Distributor</th><th>Amount</th><th>Contact person</th><th>Contact no.</th><th>Remarks</th><th>Actions</th></tr></thead>
@@ -262,6 +263,7 @@
         <!-- EXPENSES -->
         <div id="awc-expenses-view" hidden>
           <p class="status-line" id="awc-expenses-status"></p>
+          <div class="search-box"><input type="text" id="awc-search-expenses" placeholder="Search expenses…" /></div>
           <div class="table-scroll">
             <table class="ledger-table">
               <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Particular</th><th>Amount</th><th>Actions</th></tr></thead>
@@ -299,27 +301,60 @@
         <button type="button" class="add-warehouse-btn" id="add-municipality-btn">+ Add municipality</button>
         <p class="panel-meta" id="arc-municipality-meta"></p>
 
-        <p class="status-line" id="arc-status"></p>
-        <div class="table-scroll">
-          <table class="ledger-table">
-            <thead><tr><th>Region</th><th>Date</th><th>Name</th><th>Address</th><th>Balance</th><th>Actions</th></tr></thead>
-            <tbody id="arc-tbody"></tbody>
-          </table>
+        <div class="segmented">
+          <input type="radio" name="arc-mode" id="arc-mode-weekly" value="weekly" checked />
+          <label for="arc-mode-weekly">Weekly View</label>
+          <input type="radio" name="arc-mode" id="arc-mode-list" value="list" />
+          <label for="arc-mode-list">View List (by month)</label>
+          <input type="radio" name="arc-mode" id="arc-mode-report" value="report" />
+          <label for="arc-mode-report">District Report</label>
         </div>
-        <div class="pager" id="pager-arc" hidden></div>
-        <div class="form-container" id="form-container-arc"></div>
 
-        <div class="report-block">
-          <div class="report-block-head"><h3>District Summary (this week, all regions)</h3></div>
+        <!-- WEEKLY VIEW -->
+        <div id="arc-weekly-view">
+          <p class="status-line" id="arc-status"></p>
+          <div class="search-box"><input type="text" id="arc-search" placeholder="Search this list…" /></div>
           <div class="table-scroll">
             <table class="ledger-table">
-              <thead><tr><th>Region</th><th>Province</th><th>District</th><th>Municipality</th><th>Total balance</th></tr></thead>
-              <tbody id="arc-summary-tbody"></tbody>
+              <thead><tr><th>Region</th><th>Date</th><th>Name</th><th>Address</th><th>Balance</th><th>Actions</th></tr></thead>
+              <tbody id="arc-tbody"></tbody>
             </table>
           </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            <button type="button" class="refresh-btn" id="arc-export-csv">Export summary (CSV)</button>
-            <button type="button" class="refresh-btn" id="arc-export-pdf">Export summary (PDF)</button>
+          <div class="pager" id="pager-arc" hidden></div>
+          <div class="form-container" id="form-container-arc"></div>
+
+          <div class="report-block">
+            <div class="report-block-head"><h3>District Summary (this week, all regions)</h3></div>
+            <div class="table-scroll">
+              <table class="ledger-table">
+                <thead><tr><th>Region</th><th>Province</th><th>District</th><th>Municipality</th><th>Total balance</th></tr></thead>
+                <tbody id="arc-summary-tbody"></tbody>
+              </table>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+              <button type="button" class="refresh-btn" id="arc-export-csv">Export summary (CSV)</button>
+              <button type="button" class="refresh-btn" id="arc-export-pdf">Export summary (PDF)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- FULL LIST, GROUPED BY MONTH (oldest to recent), all regions -->
+        <div id="arc-list-view" hidden>
+          <p class="panel-meta" id="arc-list-meta"></p>
+          <div id="arc-list-container"></div>
+        </div>
+
+        <!-- DISTRICT REPORT (municipalities x weekly columns), all regions -->
+        <div id="arc-report-view" hidden>
+          <div class="report-controls">
+            <div class="field"><label for="arc-report-district">District</label><select id="arc-report-district"></select></div>
+            <div class="field"><label for="arc-report-month">Month</label><input type="month" id="arc-report-month" /></div>
+            <button type="button" class="btn-secondary" id="arc-report-generate">Generate report</button>
+          </div>
+          <div id="arc-report-container"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <button type="button" class="refresh-btn" id="arc-report-export-csv">Export report (CSV)</button>
+            <button type="button" class="refresh-btn" id="arc-report-export-pdf">Export report (PDF)</button>
           </div>
         </div>
       </section>
