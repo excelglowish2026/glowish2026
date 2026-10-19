@@ -204,32 +204,52 @@
       <section class="page-panel" id="panel-collectibles">
         <div class="panel-head">
           <h2 class="panel-title">Collectibles</h2>
-          <button class="refresh-btn" id="collectibles-refresh">Refresh</button>
+          <button class="refresh-btn" id="cl-refresh">Refresh</button>
         </div>
-        <p class="status-line" id="collectibles-status"></p>
-        <div class="table-scroll">
-          <table class="ledger-table">
-            <thead>
-              <tr><th>Store</th><th>Province</th><th>District</th><th>Municipality</th><th>Date</th><th>Name</th><th>Address</th><th>Balance</th></tr>
-            </thead>
-            <tbody id="collectibles-tbody"></tbody>
-          </table>
-        </div>
-        <div class="pager" id="pager-collectibles" hidden></div>
-        <form class="entry-form" id="collectibles-form">
+
+        <div class="warehouse-tab-bar" id="cl-province-tabs"></div>
+        <div class="warehouse-tab-bar" id="cl-city-tabs" style="margin-top:8px;"></div>
+        <p class="panel-meta" id="cl-city-meta"></p>
+
+        <p class="status-line" id="cl-status"></p>
+
+        <form class="entry-form" id="cl-form">
           <h3>Add collection</h3>
           <div class="form-grid">
-            <div class="field"><label for="cl-store">Store</label><input id="cl-store" name="store" required /></div>
-            <div class="field"><label for="cl-province">Province</label><input id="cl-province" name="province" required /></div>
-            <div class="field"><label for="cl-district">District</label><input id="cl-district" name="district" /></div>
-            <div class="field"><label for="cl-municipality">Municipality</label><input id="cl-municipality" name="municipality" /></div>
-            <div class="field"><label for="cl-date">Date</label><input id="cl-date" name="date" type="date" required /></div>
-            <div class="field wide"><label for="cl-name">Name</label><input id="cl-name" name="name" required /></div>
-            <div class="field wide"><label for="cl-address">Address</label><input id="cl-address" name="address" /></div>
-            <div class="field"><label for="cl-balance">Balance</label><input id="cl-balance" name="balance" type="number" step="0.01" /></div>
+            <div class="field"><label for="clf-store">Store</label><input id="clf-store" name="store" required /></div>
+            <div class="field"><label for="clf-date">Date</label><input id="clf-date" name="date" type="date" required /></div>
+            <div class="field wide"><label for="clf-name">Name</label><input id="clf-name" name="name" required /></div>
+            <div class="field wide"><label for="clf-address">Address</label><input id="clf-address" name="address" /></div>
+            <div class="field"><label for="clf-balance">Balance</label><input id="clf-balance" name="balance" type="number" step="0.01" /></div>
           </div>
           <button type="submit" class="btn-secondary">Add collection</button>
         </form>
+
+        <!-- Entries for the active city, grouped by Sat–Fri collection week -->
+        <div id="cl-list-container"></div>
+
+        <div class="report-block">
+          <div class="report-block-head"><h3>Generate Report</h3></div>
+          <div class="segmented">
+            <input type="radio" name="cl-report-mode" id="cl-report-mode-city" value="city" checked />
+            <label for="cl-report-mode-city">By city (active tab)</label>
+            <input type="radio" name="cl-report-mode" id="cl-report-mode-province" value="province" />
+            <label for="cl-report-mode-province">By province (active tab)</label>
+          </div>
+          <div class="report-controls">
+            <div class="field" id="cl-report-month-field" hidden>
+              <label for="cl-report-month">Month</label>
+              <input type="month" id="cl-report-month" />
+            </div>
+            <button type="button" class="btn-secondary" id="cl-report-generate">Generate report</button>
+            <span class="report-range-label" id="cl-report-range-label"></span>
+          </div>
+          <div id="cl-report-container"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;" id="cl-report-export-actions" hidden>
+            <button type="button" class="refresh-btn" id="cl-report-export-csv">Export report (CSV)</button>
+            <button type="button" class="refresh-btn" id="cl-report-export-pdf">Export report (PDF)</button>
+          </div>
+        </div>
       </section>
 
       <!-- WEEKLY COLLECTION (ALL-store staff only) -->

@@ -141,37 +141,15 @@ const TABLE_CONFIGS = {
       { key: 'Remarks', label: 'Remarks', wide: true }
     ]
   },
-  collectibles: {
-    sheet: 'Collectibles',
-    tbody: 'admin-collectibles-tbody',
-    colspan: 10,
-    empty: 'No collectibles found.',
-    columns: [
-      { key: 'Region', pill: true },
-      { key: 'Store' },
-      { key: 'Province' },
-      { key: 'District' },
-      { key: 'Municipality' },
-      { key: 'Date', date: true },
-      { key: 'Name' },
-      { key: 'Address' },
-      { key: 'Balance', num: true }
-    ],
-    formFields: [
-      { key: 'Store', label: 'Store', required: true },
-      { key: 'Province', label: 'Province', required: true },
-      { key: 'District', label: 'District' },
-      { key: 'Municipality', label: 'Municipality' },
-      { key: 'Date', label: 'Date', type: 'date', required: true },
-      { key: 'Name', label: 'Name', required: true, wide: true },
-      { key: 'Address', label: 'Address', wide: true },
-      { key: 'Balance', label: 'Balance', type: 'number' }
-    ]
-  }
 };
+// Collectibles is no longer part of the generic TABLE_CONFIGS system — it
+// has its own Province/City tabbed module (js/admin-collectibles.js), the
+// same way Weekly Collection and Rice Collection have their own files.
+// ADMIN_DATA.Collectibles below is still fetched here, for the Overview
+// KPI cards and per-region breakdown.
 
-const searchTerms = { regularprice: '', promorates: '', ledger: '', inventory: '', collectibles: '' };
-const currentPages = { regularprice: 1, promorates: 1, ledger: 1, inventory: 1, collectibles: 1 };
+const searchTerms = { regularprice: '', promorates: '', ledger: '', inventory: '' };
+const currentPages = { regularprice: 1, promorates: 1, ledger: 1, inventory: 1 };
 
 document.addEventListener('DOMContentLoaded', () => {
   const raw = sessionStorage.getItem('session');

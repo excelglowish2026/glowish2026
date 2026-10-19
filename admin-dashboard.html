@@ -164,19 +164,42 @@
       <!-- COLLECTIBLES -->
       <section class="page-panel" id="panel-collectibles">
         <div class="panel-head">
-          <h2 class="panel-title">Collectibles <span class="search-count" id="count-collectibles"></span></h2>
+          <h2 class="panel-title">Collectibles</h2>
+          <button type="button" class="btn-secondary" id="add-city-btn">+ Add city</button>
         </div>
-        <div class="search-box"><input type="text" id="search-collectibles" placeholder="Search name, municipality, address…" /></div>
-        <div class="table-scroll">
-          <table class="ledger-table">
-            <thead>
-              <tr><th>Region</th><th>Store</th><th>Province</th><th>District</th><th>Municipality</th><th>Date</th><th>Name</th><th>Address</th><th>Balance</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="admin-collectibles-tbody"></tbody>
-          </table>
+
+        <div class="warehouse-tab-bar" id="acl-province-tabs"></div>
+        <div class="warehouse-tab-bar" id="acl-city-tabs" style="margin-top:8px;"></div>
+        <p class="panel-meta" id="acl-city-meta"></p>
+
+        <div class="search-box"><input type="text" id="acl-search" placeholder="Search this list…" /></div>
+
+        <div id="acl-list-container"></div>
+
+        <div class="form-container" id="form-container-acl"></div>
+
+        <div class="report-block">
+          <div class="report-block-head"><h3>Generate Report</h3></div>
+          <div class="segmented">
+            <input type="radio" name="acl-report-mode" id="acl-report-mode-city" value="city" checked />
+            <label for="acl-report-mode-city">By city (active tab)</label>
+            <input type="radio" name="acl-report-mode" id="acl-report-mode-province" value="province" />
+            <label for="acl-report-mode-province">By province (active tab, all regions)</label>
+          </div>
+          <div class="report-controls">
+            <div class="field" id="acl-report-month-field" hidden>
+              <label for="acl-report-month">Month</label>
+              <input type="month" id="acl-report-month" />
+            </div>
+            <button type="button" class="btn-secondary" id="acl-report-generate">Generate report</button>
+            <span class="report-range-label" id="acl-report-range-label"></span>
+          </div>
+          <div id="acl-report-container"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;" id="acl-report-export-actions" hidden>
+            <button type="button" class="refresh-btn" id="acl-report-export-csv">Export report (CSV)</button>
+            <button type="button" class="refresh-btn" id="acl-report-export-pdf">Export report (PDF)</button>
+          </div>
         </div>
-        <div class="pager" id="pager-collectibles" hidden></div>
-        <div class="form-container" id="form-container-collectibles"></div>
       </section>
 
       <!-- REPORTS -->
@@ -412,5 +435,6 @@
   <script src="js/admin-insurance.js"></script>
   <script src="js/admin-weekly-collection.js"></script>
   <script src="js/admin-rice-collection.js"></script>
+  <script src="js/admin-collectibles.js"></script>
 </body>
 </html>
