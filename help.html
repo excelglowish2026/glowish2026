@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Manual — Glowish Tracker</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="dash-wrap">
+    <header class="dash-header">
+      <div class="dash-brand">
+        <img src="img/logo.png" alt="" class="dash-logo" />
+        <span class="mark">Glowish Tracker</span>
+        <span class="dash-store">User Manual &middot; <span id="audience-label"></span></span>
+      </div>
+      <div class="header-actions">
+        <a class="help-link" id="back-link" href="dashboard.html">&larr; Back to dashboard</a>
+        <button class="logout-btn" id="logout-btn">Log out</button>
+      </div>
+    </header>
+
+    <div class="page">
+      <section class="page-panel active manual" id="manual">
+        <div class="panel-head">
+          <h2 class="panel-title">How to use Glowish Tracker</h2>
+        </div>
+        <p class="manual-intro" id="manual-intro"></p>
+
+        <nav class="manual-toc" id="manual-toc" aria-label="Manual contents"></nav>
+
+        <!-- audience codes: s1 = staff (one store), sa = staff (Store = ALL), ad = admin, ow = owner -->
+
+        <article class="manual-section" id="m-login" data-for="s1 sa ad ow">
+          <h3>1. Logging in and out</h3>
+          <ol>
+            <li>Open the website and type the <strong>username</strong> and <strong>password</strong> your admin gave you, then press <em>Log in</em>.</li>
+            <li>The site sends you to the right dashboard automatically &mdash; you never choose it yourself. What you can see depends on your account type.</li>
+            <li>When you are done, press <em>Log out</em> (top right). Always do this on a shared computer.</li>
+          </ol>
+          <p class="manual-note"><strong>&ldquo;Invalid username or password&rdquo;?</strong> Check capital letters and spaces. If it still fails, ask your admin to check your row in the Credentials sheet.</p>
+        </article>
+
+        <article class="manual-section" id="m-basics" data-for="s1 sa ad ow">
+          <h3>2. Getting around &mdash; the basics</h3>
+          <ul>
+            <li><strong>Tabs</strong> across the top (Price List, Ledger, &hellip;) switch between features. Click a tab to open it.</li>
+            <li><strong>Pages of 30</strong> &mdash; long lists show 30 rows at a time. Use <em>Prev</em> / <em>Next</em> under the table.</li>
+            <li><strong>Refresh</strong> &mdash; press the Refresh button on a tab to reload the latest data from the spreadsheet.</li>
+            <li><strong>Remarks</strong> &mdash; long remarks are shortened in the table. Click a remark to read the whole note in a pop-up.</li>
+            <li><strong>Adding an entry</strong> &mdash; every tab has an <em>Add</em> form under its table. Fill in the fields, press the button, and the new row appears in the list.</li>
+            <li><strong>Dates</strong> use the calendar picker. Always pick the real date of the transaction &mdash; weekly totals and reports depend on it.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-store" data-for="s1">
+          <h3>3. Your store</h3>
+          <p>Your account is tied to <strong>one store</strong>. The <em>Store</em> field in every Add form is already filled in and locked, and you only see your own store&rsquo;s data. You cannot edit or delete rows after saving &mdash; if you made a mistake, tell your admin.</p>
+        </article>
+
+        <article class="manual-section" id="m-store-all" data-for="sa">
+          <h3>3. Your store access (&ldquo;ALL&rdquo;)</h3>
+          <p>Your account covers <strong>every store in your region</strong>. Two things differ from a single-store account:</p>
+          <ul>
+            <li>Tables show a <em>Store</em> column so you can tell stores apart.</li>
+            <li>The <em>Store</em> field in Add forms is <strong>not</strong> locked &mdash; type the store name exactly as it is spelled in the sheet (e.g. <code>Cebu</code>).</li>
+            <li>You also get two extra tabs: <strong>Weekly Collection</strong> and <strong>Rice Collection</strong> (see below).</li>
+          </ul>
+          <p>You cannot edit or delete rows after saving &mdash; ask your admin.</p>
+        </article>
+
+        <article class="manual-section" id="m-pricelist-staff" data-for="s1 sa">
+          <h3>Price List</h3>
+          <p>Two views, switched with the toggle at the top: <strong>Regular Price</strong> and <strong>Promo Rates</strong>. Use the search box to find an item by name or category.</p>
+          <p><strong>To add an item:</strong></p>
+          <ol>
+            <li>Choose the toggle (Regular or Promo).</li>
+            <li>Fill in Category, Item name and Price (or SRP for promos; promos also need a Promo name such as <em>Christmas Sale</em>).</li>
+            <li>Pick the <strong>Discount</strong> from the dropdown.</li>
+            <li>The <strong>Distributor price</strong> fills itself in &mdash; you cannot type in it. Press <em>Add item</em>.</li>
+          </ol>
+        </article>
+
+        <article class="manual-section" id="m-ledger-staff" data-for="s1 sa">
+          <h3>Ledger</h3>
+          <p>The ledger records each delivery, payment and balance per location. The newest balance for your store(s) appears in the list.</p>
+          <ol>
+            <li>Fill in Location, Date, Beginning balance, Reference, Delivery, Payment and Balance.</li>
+            <li>Add a <strong>Remarks</strong> note if anything needs explaining (optional).</li>
+            <li>Press <em>Add entry</em>.</li>
+          </ol>
+          <p class="manual-note">Enter rows in the order they happened &mdash; the most recently added row is treated as the current balance.</p>
+        </article>
+
+        <article class="manual-section" id="m-inventory-staff" data-for="s1 sa">
+          <h3>Inventory</h3>
+          <ul>
+            <li>Pick a <strong>warehouse tab</strong> (e.g. Baybay, Quezon), then switch between <strong>Old items</strong> and <strong>New items</strong>.</li>
+            <li>A row with a <strong>Total under 10</strong> is highlighted in <span class="manual-red">red</span> &mdash; time to restock.</li>
+            <li>To log stock movement: choose Category and the warehouse, enter the Item name, Beginning, In, Out and Total, plus who it went to, the address and who delivered it. Press <em>Add item</em>.</li>
+            <li>If a warehouse has nothing yet, the table says <em>Empty Inventory</em>.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-collectibles-staff" data-for="s1 sa">
+          <h3>Collectibles</h3>
+          <p>Collectibles are organised by <strong>Province</strong> then <strong>City</strong>.</p>
+          <ol>
+            <li>Click a <strong>province tab</strong> (e.g. Cebu), then a <strong>city tab</strong> under it (e.g. Mandaue).</li>
+            <li>The list shows that city&rsquo;s entries grouped by <strong>collection week, Saturday to Friday</strong> (for example <em>Aug 29 &ndash; Sep 4</em>), each week with its own total, and an overall total at the bottom.</li>
+            <li>To add an entry, make sure the right province and city tabs are selected, then fill in Date, Name, Address and Balance and press <em>Add collection</em>.</li>
+          </ol>
+          <p><strong>Generate Report</strong> (under the list):</p>
+          <ul>
+            <li><em>By city</em> &mdash; every week for the selected city, with totals.</li>
+            <li><em>By province</em> &mdash; choose a month to get one total per city for that province.</li>
+            <li>Press <em>Generate report</em>, check the preview, then <em>Export report (CSV)</em> (opens in Excel) or <em>(PDF)</em>.</li>
+          </ul>
+          <p class="manual-note">If you see &ldquo;No provinces yet&rdquo;, an admin still has to add cities. Staff cannot add new provinces or cities.</p>
+        </article>
+
+        <article class="manual-section" id="m-weekly" data-for="sa">
+          <h3>Weekly Collection <span class="manual-tag">Store = ALL only</span></h3>
+          <p>Tracks money collected from distributors and the expenses paid out, one <strong>Monday-to-Saturday week</strong> at a time.</p>
+          <ol>
+            <li>Pick <em>any date</em> inside the week you want and press <em>Load week</em>. The page shows that week&rsquo;s range (e.g. May 11 &ndash; May 16).</li>
+            <li>The three cards at the top &mdash; <strong>Total collections, Total expenses, Net</strong> &mdash; update instantly.</li>
+            <li>Use the <strong>Collections / Expenses</strong> toggle to switch lists. Use the search box to find a name quickly.</li>
+            <li><strong>Add collection:</strong> Store, Date, Distributor name, Amount, Contact person/number, Remarks. <strong>Add expense:</strong> Store, Date, Particular, Amount.</li>
+          </ol>
+          <p><strong>Generate Report:</strong> choose <em>By week</em> or <em>By month</em>, pick any date or month (it does not have to be the week you are viewing), press <em>Generate report</em>, then export as CSV or PDF.</p>
+        </article>
+
+        <article class="manual-section" id="m-rice" data-for="sa">
+          <h3>Rice Collection <span class="manual-tag">Store = ALL only</span></h3>
+          <p>Rice collections are listed per <strong>municipality</strong>, in <strong>Saturday-to-Friday weeks</strong> that restart on the first Saturday of every month.</p>
+          <ul>
+            <li><strong>Weekly View</strong> &mdash; click a municipality tab, load a week, and add entries (Date, Name, Address, Balance). A <em>District Summary</em> under the list totals each municipality for that week.</li>
+            <li><strong>View List (by month)</strong> &mdash; the full history of the selected municipality, grouped month by month, oldest first.</li>
+            <li><strong>District Report</strong> &mdash; pick a district and a month to get a table of municipalities down the side and weeks across the top, with totals and an overall total. Export it as CSV or PDF.</li>
+          </ul>
+          <p class="manual-note">If a municipality is missing from the tabs, ask an admin to add it.</p>
+        </article>
+
+        <article class="manual-section" id="m-exports" data-for="s1 sa ad ow">
+          <h3>Exporting to Excel or PDF</h3>
+          <ul>
+            <li><strong>CSV / Excel:</strong> the file downloads straight away. Open it with Excel (or Google Sheets).</li>
+            <li><strong>PDF:</strong> a new tab opens with a clean report and your browser&rsquo;s <em>Print</em> window appears. Change the destination to <strong>Save as PDF</strong>, then press <em>Save</em>. The site does not create a PDF file by itself.</li>
+            <li>If nothing happens, your browser may be blocking the pop-up &mdash; allow pop-ups for this site and try again.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-admin-overview" data-for="ad ow">
+          <h3>Admin dashboard &mdash; Overview</h3>
+          <p>As an admin you see <strong>every region and store</strong>. The Overview tab shows:</p>
+          <ul>
+            <li><strong>Number cards</strong> &mdash; active stores, price list items, outstanding ledger balance, outstanding collectibles, inventory items, <strong>low-stock items</strong>, plus the all-time <strong>weekly collection total, expenses and net income</strong>.</li>
+            <li><strong>Low stock card</strong> &mdash; click it to jump to Inventory showing only items under 10 units. Press <em>Clear filter</em> to go back.</li>
+            <li><strong>By region</strong> &mdash; a small summary for Luzon, Visayas and Mindanao.</li>
+          </ul>
+          <p>Press <em>Refresh all data</em> (top right) after you or someone else has made changes.</p>
+        </article>
+
+        <article class="manual-section" id="m-admin-tables" data-for="ad ow">
+          <h3>Price List, Ledger, Inventory</h3>
+          <ul>
+            <li>These tabs show data from <strong>all three regions</strong> merged together, with a <em>Region</em> column. Use the search box to filter; the counter shows how many rows match.</li>
+            <li>Every row has <strong>Edit</strong> and <strong>Delete</strong> links. <em>Edit</em> loads the row into the form below, then press <em>Update entry</em> (or <em>Cancel edit</em>). <em>Delete</em> asks you to confirm and cannot be undone.</li>
+            <li>In the <strong>Add</strong> form, choose the <strong>Region</strong> first &mdash; the row is saved to that region&rsquo;s spreadsheet.</li>
+            <li><strong>Price List</strong> has Regular Price / Promo Rates toggles; distributor price is calculated automatically from the discount.</li>
+            <li><strong>Inventory</strong> has warehouse tabs and an Old/New toggle. Press <em>+ Add warehouse</em> to create a new warehouse tab for everyone.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-admin-collectibles" data-for="ad ow">
+          <h3>Collectibles (admin)</h3>
+          <ul>
+            <li>Same Province &rarr; City tabs and Saturday&ndash;Friday week grouping that staff see, but across <strong>all regions</strong>, with search and Edit/Delete on each row.</li>
+            <li>Press <strong>+ Add city</strong> to add a new city and its province. A brand-new province gets its own tab automatically.</li>
+            <li><strong>Generate Report</strong> &mdash; <em>By city</em> or <em>By province</em> (pick a month), exported as CSV or PDF.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-admin-reports" data-for="ad ow">
+          <h3>Reports tab</h3>
+          <p>Pick a <strong>Week ending</strong> date and press <em>Generate</em> to see <strong>Weekly Sales</strong> (from the Ledger: entries, delivery, payment, ending balance per store) and <strong>Weekly Stock Inventory</strong>. Each block has its own <em>Export CSV</em> button.</p>
+        </article>
+
+        <article class="manual-section" id="m-admin-weekly" data-for="ad ow">
+          <h3>Weekly Collection and Rice Collection (admin)</h3>
+          <ul>
+            <li><strong>Weekly Collection</strong> works like the staff version but covers every region, with a Region column and Edit/Delete. Use <em>Generate Report</em> (by week or month) for CSV/PDF exports.</li>
+            <li><strong>Rice Collection</strong> has the same Weekly View, View List and District Report modes. Press <em>+ Add municipality</em> to add a municipality (it asks for the name, province and district).</li>
+            <li>Both tabs have a search box above the list.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-owner" data-for="ow">
+          <h3>Insurance (owner only)</h3>
+          <p>The <strong>Insurance</strong> tab is private &mdash; no other account can see it.</p>
+          <ul>
+            <li>Choose a <strong>month tab</strong> (January&ndash;December) to see that month&rsquo;s records, newest first.</li>
+            <li>Add records with Month, Date, Name, Birthdate, Address and Remarks. Choosing a date picks the matching month for you.</li>
+            <li>Edit or delete a record from its row.</li>
+            <li>Press <em>Export to Excel (CSV)</em> to download the records.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-accounts" data-for="ad ow">
+          <h3>Managing accounts</h3>
+          <p>Logins live in the <strong>Credentials</strong> sheet of the Directory spreadsheet (Username, Password, Role, Region, Store). To create a staff login, add a row with Role <code>staff</code>, the Region, and either one Store name or <code>ALL</code>. Admins use Role <code>admin</code>; the business owner uses <code>owner</code>. The site reads the sheet at login, so new accounts work immediately.</p>
+        </article>
+
+        <article class="manual-section" id="m-trouble" data-for="s1 sa ad ow">
+          <h3>Troubleshooting</h3>
+          <dl class="manual-faq">
+            <dt>I added something but it does not show.</dt>
+            <dd>Press <em>Refresh</em>. If a recent site update still looks old, do a hard refresh (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> on Mac).</dd>
+            <dt>A week or month looks empty but I know there is data.</dt>
+            <dd>Check the date range shown beside the date picker, and that the entry&rsquo;s date is filled in.</dd>
+            <dt>&ldquo;Couldn&rsquo;t load&rdquo; or &ldquo;Not connected to a spreadsheet&rdquo;.</dt>
+            <dd>Check your internet connection and try again. If it keeps happening, tell your admin.</dd>
+            <dt>I can&rsquo;t see a tab my coworker has.</dt>
+            <dd>Tabs depend on your account type (for example Weekly and Rice Collection need <code>Store = ALL</code>). Ask your admin if your access should change.</dd>
+            <dt>I need to fix a mistake.</dt>
+            <dd>Staff cannot edit saved rows &mdash; ask an admin, who can edit or delete it.</dd>
+          </dl>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/help.js"></script>
+</body>
+</html>

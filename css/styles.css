@@ -928,3 +928,49 @@ table.ledger-table {
   .report-controls { flex-direction: column; align-items: stretch; }
   .modal-box { max-height: 90vh; }
 }
+
+/* ---- User manual (help.html) + Help link in dashboard headers ---- */
+.help-link {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid rgba(251,247,238,0.4);
+  color: var(--paper);
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 13px;
+  text-decoration: none;
+  margin-right: 8px;
+}
+.help-link:hover { border-color: var(--brass-light); color: var(--brass-light); }
+
+.manual-intro { color: var(--ink-soft); margin: 0 0 18px; max-width: 70ch; }
+
+.manual-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 26px;
+  background: #fff;
+  border: 1px solid var(--paper-line);
+  border-left: 4px solid var(--brass);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.manual-toc strong { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); width: 100%; }
+.manual-toc a { color: var(--cover); text-decoration: none; border-bottom: 1px dotted var(--brass); }
+.manual-toc a:hover { color: var(--brass); }
+
+.manual-section { margin: 0 0 28px; padding-bottom: 22px; border-bottom: 1px dashed var(--paper-line); max-width: 78ch; scroll-margin-top: 16px; }
+.manual-section[hidden] { display: none; }
+.manual-section h3 { font-family: var(--font-display); font-size: 19px; color: var(--cover); margin: 0 0 10px; }
+.manual-section p, .manual-section li, .manual-section dd { line-height: 1.6; }
+.manual-section ol, .manual-section ul { padding-left: 22px; }
+.manual-section li { margin-bottom: 6px; }
+.manual-note { background: #fff; border: 1px solid var(--paper-line); border-radius: 4px; padding: 10px 14px; font-size: 13px; color: var(--ink-soft); }
+.manual-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; background: var(--brass); color: #fff; padding: 2px 8px; border-radius: 10px; vertical-align: middle; margin-left: 6px; }
+.manual-red { color: var(--rule-red); font-weight: 600; }
+.manual-faq dt { font-weight: 600; margin-top: 12px; color: var(--cover); }
+.manual-faq dd { margin: 4px 0 0; }
+.manual code, .manual kbd { font-family: var(--font-mono); font-size: 12px; background: #fff; border: 1px solid var(--paper-line); border-radius: 3px; padding: 1px 5px; }
