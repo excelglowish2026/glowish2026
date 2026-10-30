@@ -167,10 +167,11 @@
           <label for="view-new">New items</label>
         </div>
         <p class="status-line" id="inventory-status"></p>
+        <div class="search-box"><input type="text" id="inventory-search" placeholder="Search item, store, date, remarks…" /></div>
         <div class="table-scroll">
-          <table class="ledger-table">
+          <table class="ledger-table inventory-compact">
             <thead>
-              <tr><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th>Out to</th><th>Address</th><th>Delivered by</th><th>Remarks</th></tr>
+              <tr><th>Store</th><th>Date</th><th>Item name</th><th>Beg.</th><th>In</th><th>Out</th><th>Total</th><th></th></tr>
             </thead>
             <tbody id="inventory-tbody"></tbody>
           </table>

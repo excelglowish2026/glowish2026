@@ -38,6 +38,7 @@
       <button class="tab" data-target="panel-reports">Reports</button>
       <button class="tab" data-target="panel-weeklycollection">Weekly Collection</button>
       <button class="tab" data-target="panel-ricecollection">Rice Collection</button>
+      <button class="tab" data-target="panel-activity" id="tab-activity">Activity</button>
       <button class="tab" data-target="panel-insurance" id="tab-insurance" hidden>Insurance</button>
     </nav>
 
@@ -400,6 +401,32 @@
         </div>
       </section>
 
+      <!-- ACTIVITY (staff monitoring) -->
+      <section class="page-panel" id="panel-activity">
+        <div class="panel-head">
+          <h2 class="panel-title">Activity <span class="search-count" id="activity-count"></span></h2>
+          <button type="button" class="refresh-btn" id="activity-refresh">Refresh</button>
+        </div>
+        <p class="panel-meta">Everything staff (and admins) add, edit or delete, newest first. Click <em>View more</em> on any row to see exactly what was entered or changed.</p>
+        <p class="status-line" id="activity-status"></p>
+        <div class="report-controls activity-filters">
+          <div class="field"><label for="activity-role">Role</label>
+            <select id="activity-role"><option value="staff">Staff</option><option value="">All roles</option><option value="admin">Admin</option><option value="owner">Owner</option></select></div>
+          <div class="field"><label for="activity-user">Username</label><select id="activity-user"><option value="">All users</option></select></div>
+          <div class="field"><label for="activity-tab">Tab</label><select id="activity-tab"><option value="">All tabs</option></select></div>
+          <div class="field"><label for="activity-action">Action</label>
+            <select id="activity-action"><option value="">All actions</option><option>Add</option><option>Edit</option><option>Delete</option></select></div>
+        </div>
+        <div class="search-box"><input type="text" id="activity-search" placeholder="Search username, tab, item…" /></div>
+        <div class="table-scroll">
+          <table class="ledger-table activity-table">
+            <thead><tr><th>When</th><th>Username</th><th>Role</th><th>Tab</th><th>Action</th><th>Item</th><th></th></tr></thead>
+            <tbody id="activity-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="pager-activity" hidden></div>
+      </section>
+
       <!-- INSURANCE (owner only) -->
       <section class="page-panel" id="panel-insurance">
         <div class="panel-head">
@@ -437,5 +464,6 @@
   <script src="js/admin-weekly-collection.js"></script>
   <script src="js/admin-rice-collection.js"></script>
   <script src="js/admin-collectibles.js"></script>
+  <script src="js/admin-activity.js"></script>
 </body>
 </html>

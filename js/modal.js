@@ -22,6 +22,32 @@ function showTextModal(title, text) {
   document.body.appendChild(overlay);
 }
 
+// Opens the same overlay with arbitrary HTML inside (used for Inventory
+// "View more" and the admin Activity detail). Returns the body element so the
+// caller can wire up buttons and swap its content.
+function showDetailModal(title, bodyHtml) {
+  closeTextModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'text-modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-box modal-wide" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+      <div class="modal-head">
+        <h3>${escapeHtml(title)}</h3>
+        <button type="button" class="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">${bodyHtml}</div>
+    </div>
+  `;
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeTextModal();
+  });
+  overlay.querySelector('.modal-close').addEventListener('click', closeTextModal);
+  document.addEventListener('keydown', escCloseModal);
+  document.body.appendChild(overlay);
+  return overlay.querySelector('.modal-body');
+}
+
 function closeTextModal() {
   const existing = document.getElementById('text-modal-overlay');
   if (existing) existing.remove();

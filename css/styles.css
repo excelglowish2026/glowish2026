@@ -974,3 +974,35 @@ table.ledger-table {
 .manual-faq dt { font-weight: 600; margin-top: 12px; color: var(--cover); }
 .manual-faq dd { margin: 4px 0 0; }
 .manual code, .manual kbd { font-family: var(--font-mono); font-size: 12px; background: #fff; border: 1px solid var(--paper-line); border-radius: 3px; padding: 1px 5px; }
+
+/* ---- Inventory compact table + detail modal ---- */
+.modal-box.modal-wide { max-width: 640px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+.detail-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.detail-item.wide { grid-column: 1 / -1; }
+.detail-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+.detail-value { overflow-wrap: anywhere; white-space: pre-wrap; }
+.detail-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.inv-edit-form .field label { display: flex; flex-direction: column; gap: 4px; }
+.inv-edit-form .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+.inv-edit-form .field.wide { grid-column: 1 / -1; }
+.inv-edit-form input[readonly] { background: #f1ecdd; color: var(--ink-soft); }
+.inventory-compact td, .inventory-compact th { white-space: nowrap; }
+.inventory-compact td:nth-child(3) { white-space: normal; min-width: 120px; }
+@media (max-width: 640px) {
+  .detail-grid, .inv-edit-form .form-grid { grid-template-columns: 1fr; }
+  .inventory-compact th, .inventory-compact td { padding: 8px 6px; font-size: 12px; }
+}
+
+/* ---------- Activity monitoring (admin) ---------- */
+.activity-table td.nowrap, .activity-table th { white-space: nowrap; }
+.activity-filters { margin-bottom: 10px; }
+.act-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid transparent; }
+.act-add { background: #e6f4ea; color: #1e6b3a; border-color: #b9dfc6; }
+.act-edit { background: #fff4d6; color: #8a6100; border-color: #ecd593; }
+.act-delete { background: #fde8e6; color: #a32a20; border-color: #f2bbb5; }
+.detail-subhead { margin: 16px 0 8px; font-size: 14px; }
+.activity-detail-table td, .activity-detail-table th { white-space: normal; word-break: break-word; }
+@media (max-width: 640px) {
+  .activity-table th, .activity-table td { padding: 8px 6px; font-size: 13px; }
+}

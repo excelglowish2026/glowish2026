@@ -8,6 +8,8 @@
   const categoryToggle = document.querySelectorAll('input[name="inventory-category-view"]');
   const warehouseTabsEl = document.getElementById('warehouse-tabs');
   const warehouseHint = document.getElementById('inventory-warehouse-hint');
+  const searchInput = document.getElementById('inventory-search');
+  let searchTerm = '';
 
   let allRows = [];
   let warehouses = [];
@@ -20,6 +22,13 @@
     if (!loaded) load();
   });
   refreshBtn.addEventListener('click', load);
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      searchTerm = searchInput.value.trim().toLowerCase();
+      currentPage = 1;
+      render();
+    });
+  }
   categoryToggle.forEach((r) => r.addEventListener('change', () => { currentPage = 1; render(); }));
 
   function currentView() {
@@ -77,13 +86,18 @@
     const view = currentView();
     warehouseHint.textContent = activeWarehouse ? `Adding to warehouse: ${activeWarehouse}` : '';
 
-    const filtered = allRows.filter((r) =>
+    let filtered = allRows.filter((r) =>
       String(r.Category).toLowerCase() === view.toLowerCase() &&
       String(r.Warehouse || '') === String(activeWarehouse || '')
     );
+    if (searchTerm) {
+      filtered = filtered.filter((r) =>
+        Object.values(r).some((v) => String(v ?? '').toLowerCase().includes(searchTerm)) ||
+        fmtDate(r.Date).toLowerCase().includes(searchTerm));
+    }
 
     if (!filtered.length) {
-      tbody.innerHTML = '<tr><td colspan="11" class="empty-row">Empty Inventory</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="8" class="empty-row">${searchTerm ? 'No items match your search.' : 'Empty Inventory'}</td></tr>`;
       pagerEl.hidden = true;
       return;
     }
@@ -99,14 +113,112 @@
         <td class="num">${escapeHtml(r.In)}</td>
         <td class="num">${escapeHtml(r.Out)}</td>
         <td class="num">${escapeHtml(r.Total)}</td>
-        <td>${escapeHtml(r.OutTo)}</td>
-        <td>${escapeHtml(r.Address)}</td>
-        <td>${escapeHtml(r.DeliveredBy)}</td>
-        ${remarksCellHtml(r.Remarks)}
+        <td><button type="button" class="link-btn inv-view-btn" data-row="${r._row}">View more</button></td>
       </tr>
     `;
     }).join('');
     renderPager(pagerEl, filtered.length, currentPage, (p) => { currentPage = p; render(); });
+  }
+
+  // ---- "View more" modal: every field, plus Edit for Store = ALL staff ----
+  tbody.addEventListener('click', (e) => {
+    const btn = e.target.closest('.inv-view-btn');
+    if (!btn) return;
+    const row = allRows.find((r) => String(r._row) === String(btn.dataset.row));
+    if (row) openDetail(row);
+  });
+
+  const DETAIL_FIELDS = [
+    ['Store', 'Store'], ['Warehouse', 'Warehouse'], ['Category', 'Category'], ['Date', 'Date'],
+    ['ItemName', 'Item name'], ['Beg', 'Beginning'], ['In', 'In'], ['Out', 'Out'], ['Total', 'Total'],
+    ['OutTo', 'Out to'], ['Address', 'Address'], ['DeliveredBy', 'Delivered by'], ['Remarks', 'Remarks']
+  ];
+
+  function openDetail(row) {
+    const body = showDetailModal(row.ItemName || 'Inventory item', '');
+    showDetailView(body, row);
+  }
+
+  function showDetailView(body, row) {
+    const items = DETAIL_FIELDS.map(([key, label]) => {
+      const val = key === 'Date' ? fmtDate(row[key]) : row[key];
+      const wide = key === 'Address' || key === 'Remarks' || key === 'ItemName';
+      return `<div class="detail-item${wide ? ' wide' : ''}"><span class="detail-label">${escapeHtml(label)}</span><span class="detail-value">${escapeHtml(val) || '\u2014'}</span></div>`;
+    }).join('');
+    body.innerHTML = `
+      <div class="detail-grid">${items}</div>
+      ${SESSION.allStores ? '<div class="detail-actions"><button type="button" class="btn-secondary" id="inv-edit-btn">Edit</button></div>' : ''}
+    `;
+    const editBtn = body.querySelector('#inv-edit-btn');
+    if (editBtn) editBtn.addEventListener('click', () => showEditView(body, row));
+  }
+
+  function showEditView(body, row) {
+    const whOptions = warehouses.map((w) => `<option value="${escapeHtml(w)}" ${w === row.Warehouse ? 'selected' : ''}>${escapeHtml(w)}</option>`).join('');
+    const num = (name, label) => `<div class="field"><label>${label}<input name="${name}" type="number" step="any" value="${escapeHtml(row[name] ?? '')}" /></label></div>`;
+    const txt = (name, label, wide) => `<div class="field${wide ? ' wide' : ''}"><label>${label}<input name="${name}" value="${escapeHtml(row[name] ?? '')}" /></label></div>`;
+    body.innerHTML = `
+      <form class="inv-edit-form" id="inv-edit-form">
+        <p class="panel-meta">Item name can\u2019t be changed. When you press Update, the date becomes today (${escapeHtml(fmtDate(todayKey()))}).</p>
+        <div class="form-grid">
+          <div class="field wide"><label>Item name<input value="${escapeHtml(row.ItemName)}" readonly /></label></div>
+          ${txt('Store', 'Store')}
+          <div class="field"><label>Warehouse<select name="Warehouse">${whOptions}</select></label></div>
+          <div class="field"><label>Category<select name="Category"><option value="Old" ${row.Category === 'Old' ? 'selected' : ''}>Old</option><option value="New" ${row.Category === 'New' ? 'selected' : ''}>New</option></select></label></div>
+          ${num('Beg', 'Beginning')}
+          ${num('In', 'In')}
+          ${num('Out', 'Out')}
+          ${num('Total', 'Total')}
+          ${txt('OutTo', 'Out to')}
+          ${txt('DeliveredBy', 'Delivered by')}
+          ${txt('Address', 'Address', true)}
+          ${txt('Remarks', 'Remarks', true)}
+        </div>
+        <p class="status-line" id="inv-edit-status"></p>
+        <div class="detail-actions">
+          <button type="submit" class="btn-secondary">Update</button>
+          <button type="button" class="refresh-btn" id="inv-edit-cancel">Cancel</button>
+        </div>
+      </form>
+    `;
+    body.querySelector('#inv-edit-cancel').addEventListener('click', () => showDetailView(body, row));
+    body.querySelector('#inv-edit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const statusEl = body.querySelector('#inv-edit-status');
+      const submit = f.querySelector('button[type="submit"]');
+      const val = (n) => f.elements[n].value.trim();
+      const data = {
+        Store: val('Store'),
+        Warehouse: f.elements['Warehouse'].value,
+        Category: f.elements['Category'].value,
+        Date: todayKey(),
+        ItemName: row.ItemName,
+        Beg: val('Beg'), In: val('In'), Out: val('Out'), Total: val('Total'),
+        OutTo: val('OutTo'), Address: val('Address'), DeliveredBy: val('DeliveredBy'), Remarks: val('Remarks')
+      };
+      submit.disabled = true;
+      statusEl.classList.remove('error');
+      statusEl.textContent = 'Saving\u2026';
+      try {
+        const res = await apiPost({ action: 'updateRow', sheet: 'Inventory', region: SESSION.region, row: row._row, data });
+        if (!res.success) throw new Error(res.error);
+        closeTextModal();
+        await load();
+        setStatus('Item updated \u2014 date set to today.');
+      } catch (err) {
+        submit.disabled = false;
+        statusEl.classList.add('error');
+        statusEl.textContent = 'Couldn\u2019t save: ' + err.message;
+      }
+    });
+  }
+
+  // Today's date in the user's own timezone, as yyyy-MM-dd.
+  function todayKey() {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
   }
 
   function isLowStock(total) {

@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   document.getElementById('manual-intro').textContent = intros[audience];
 
+  document.querySelectorAll('.manual-section li[data-for]').forEach((li) => {
+    if (!li.dataset.for.split(/\s+/).includes(audience)) li.hidden = true;
+  });
+
   const toc = document.getElementById('manual-toc');
   const links = [];
   document.querySelectorAll('.manual-section').forEach((sec) => {

@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const result = await apiGet({ action: 'login', username, password });
       if (result.success) {
+        if (!result.username) result.username = username;
         sessionStorage.setItem('session', JSON.stringify(result));
         routeToDashboard(result);
       } else {
