@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('refresh-all-btn').addEventListener('click', loadAllData);
 
   // Tabs
-  const tabs = document.querySelectorAll('.tab');
+  const tabs = document.querySelectorAll('.tab, .tab-ext');
   const panels = document.querySelectorAll('.page-panel');
   tabs.forEach((tab) => {
     tab.addEventListener('click', () => {
@@ -322,7 +322,7 @@ function lowStockEntries() {
 
 function showLowStockView() {
   lowStockOnly = true;
-  document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+  document.querySelectorAll('.tab, .tab-ext').forEach((t) => t.classList.remove('active'));
   document.querySelectorAll('.page-panel').forEach((p) => p.classList.remove('active'));
   const tabBtn = document.querySelector('.tab[data-target="panel-inventory"]');
   if (tabBtn) tabBtn.classList.add('active');

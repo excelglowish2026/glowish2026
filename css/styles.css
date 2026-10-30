@@ -1006,3 +1006,19 @@ table.ledger-table {
 @media (max-width: 640px) {
   .activity-table th, .activity-table td { padding: 8px 6px; font-size: 13px; }
 }
+
+/* Activity button in header (next to Help) */
+.activity-btn {
+  background: var(--brass, #c9a24b);
+  border: 1px solid var(--brass-light, #e0bd6a);
+  color: #1f3b2f;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-right: 8px;
+  box-shadow: 0 0 0 0 rgba(224,189,106,.6);
+}
+.activity-btn:hover { background: var(--brass-light, #e0bd6a); }
+.activity-btn.active { background: #fbf7ee; color: #1f3b2f; box-shadow: 0 0 0 3px rgba(224,189,106,.55); }

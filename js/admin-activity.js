@@ -19,7 +19,7 @@
   let loaded = false;
 
   document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.tab[data-target="panel-activity"]').addEventListener('click', () => {
+    document.querySelector('[data-target="panel-activity"]').addEventListener('click', () => {
       if (!loaded) load();
     });
     document.getElementById('activity-refresh').addEventListener('click', load);
