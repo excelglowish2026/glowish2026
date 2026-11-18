@@ -150,6 +150,20 @@
             <label for="admin-view-new">New items</label>
           </div>
           <div class="search-box"><input type="text" id="search-inventory" placeholder="Search item, store, out to…" /></div>
+
+          <div class="report-controls inv-export-bar">
+            <div class="field"><label for="inv-export-scope">Export / print</label>
+              <select id="inv-export-scope">
+                <option value="view">Current view (this warehouse, Old/New as shown)</option>
+                <option value="warehouse">This warehouse (Old + New)</option>
+                <option value="all">All warehouses</option>
+              </select></div>
+            <div class="field"><label for="inv-export-region">Region</label>
+              <select id="inv-export-region"><option value="">All regions</option></select></div>
+            <label class="inv-export-check"><input type="checkbox" id="inv-export-latest" checked /> Current stock only (latest entry per item)</label>
+            <button type="button" class="refresh-btn" id="inv-export-print">Print / Save as PDF</button>
+            <button type="button" class="refresh-btn" id="inv-export-csv">Export CSV</button>
+          </div>
           <div class="table-scroll">
             <table class="ledger-table">
               <thead>
@@ -465,5 +479,6 @@
   <script src="js/admin-rice-collection.js"></script>
   <script src="js/admin-collectibles.js"></script>
   <script src="js/admin-activity.js"></script>
+  <script src="js/admin-inventory-export.js"></script>
 </body>
 </html>
