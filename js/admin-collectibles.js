@@ -163,7 +163,7 @@
     if (!rows.length) return `<p class="empty-row">${searchTerm ? 'No entries match your search.' : 'No collectibles logged yet for this city.'}</p>`;
     const groups = groupByWeek(rows);
     let overallTotal = 0;
-    const leadCols = (opts.showRegion ? 1 : 0) + 3; // Region? + Date + Name + Address
+    const leadCols = (opts.showRegion ? 1 : 0) + 4; // Region? + Date + Ref. Date + Name + Address
     const blocksHtml = groups.map((g) => {
       const total = sumBalances(g.rows);
       overallTotal += total;
@@ -174,15 +174,17 @@
           <div class="report-block-head"><h3>${escapeHtml(label)}</h3><span class="panel-meta">${g.rows.length} ${g.rows.length === 1 ? 'entry' : 'entries'}</span></div>
           <div class="table-scroll">
             <table class="ledger-table">
-              <thead><tr>${opts.showRegion ? '<th>Region</th>' : ''}<th>Date</th><th>Name</th><th>Address</th><th>Balance</th>${opts.actions ? '<th>Actions</th>' : ''}</tr></thead>
+              <thead><tr>${opts.showRegion ? '<th>Region</th>' : ''}<th>Date</th><th>Ref. Date</th><th>Name</th><th>Address</th><th>Balance</th><th>Remarks</th>${opts.actions ? '<th>Actions</th>' : ''}</tr></thead>
               <tbody>
                 ${sortedRows.map((r) => `
                   <tr>
                     ${opts.showRegion ? `<td><span class="region-pill">${escapeHtml(r.Region)}</span></td>` : ''}
                     <td>${fmtDate(r.Date)}</td>
+                    <td>${r.RefDate ? fmtDate(r.RefDate) : '\u2014'}</td>
                     <td>${escapeHtml(r.Name)}</td>
                     <td>${escapeHtml(r.Address)}</td>
                     <td class="num">${escapeHtml(r.Balance)}</td>
+                    ${remarksCellHtml(r.Remarks)}
                     ${opts.actions ? `
                     <td class="row-actions">
                       <button type="button" class="link-btn acl-edit-btn" data-region="${escapeHtml(r.Region)}" data-row="${r._row}">Edit</button>
@@ -190,7 +192,7 @@
                     </td>` : ''}
                   </tr>
                 `).join('')}
-                <tr class="totals-row"><td colspan="${leadCols}">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td>${opts.actions ? '<td></td>' : ''}</tr>
+                <tr class="totals-row"><td colspan="${leadCols}">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td><td></td>${opts.actions ? '<td></td>' : ''}</tr>
               </tbody>
             </table>
           </div>
@@ -221,10 +223,12 @@
             <select id="f-acl-Region" name="Region" required>${REGIONS.map((r) => `<option value="${r}">${r}</option>`).join('')}</select>
           </div>
           <div class="field"><label for="f-acl-Store">Store</label><input id="f-acl-Store" name="Store" required /></div>
-          <div class="field"><label for="f-acl-Date">Date</label><input id="f-acl-Date" name="Date" type="date" required /></div>
+          <div class="field"><label for="f-acl-Date">Collection date</label><input id="f-acl-Date" name="Date" type="date" required /></div>
+          <div class="field"><label for="f-acl-RefDate">Ref. Date (original date of debt)</label><input id="f-acl-RefDate" name="RefDate" type="date" /></div>
           <div class="field wide"><label for="f-acl-Name">Name</label><input id="f-acl-Name" name="Name" required /></div>
           <div class="field wide"><label for="f-acl-Address">Address</label><input id="f-acl-Address" name="Address" /></div>
           <div class="field"><label for="f-acl-Balance">Balance</label><input id="f-acl-Balance" name="Balance" type="number" step="0.01" /></div>
+          <div class="field wide"><label for="f-acl-Remarks">Remarks</label><input id="f-acl-Remarks" name="Remarks" /></div>
         </div>
         <p class="panel-meta">Saves to the province/city tab currently selected above.</p>
         <div class="form-actions">
@@ -253,7 +257,9 @@
       Date: form.elements['Date'].value,
       Name: form.elements['Name'].value.trim(),
       Address: form.elements['Address'].value.trim(),
-      Balance: form.elements['Balance'].value
+      Balance: form.elements['Balance'].value,
+      RefDate: form.elements['RefDate'].value,
+      Remarks: form.elements['Remarks'].value.trim()
     };
 
     const editRow = form.dataset.editRow;
@@ -285,6 +291,8 @@
     form.elements['Name'].value = rowObj.Name || '';
     form.elements['Address'].value = rowObj.Address || '';
     form.elements['Balance'].value = rowObj.Balance || '';
+    form.elements['RefDate'].value = rowObj.RefDate ? String(rowObj.RefDate).slice(0, 10) : '';
+    form.elements['Remarks'].value = rowObj.Remarks || '';
     form.dataset.editRow = rowNum;
     form.dataset.editRegion = region;
     document.getElementById('form-title-acl').textContent = 'Edit collection';
@@ -381,11 +389,11 @@
         const csvRows = [];
         groups.forEach((g) => {
           const label = g.week ? formatWeekLabel(g.week) : 'Undated';
-          g.rows.forEach((r) => csvRows.push({ Week: label, Region: r.Region, Store: r.Store, Date: fmtDate(r.Date), Name: r.Name, Address: r.Address, Balance: r.Balance }));
+          g.rows.forEach((r) => csvRows.push({ Week: label, Region: r.Region, Store: r.Store, Date: fmtDate(r.Date), Name: r.Name, Address: r.Address, Balance: r.Balance, RefDate: r.RefDate ? fmtDate(r.RefDate) : '', Remarks: r.Remarks || '' }));
         });
         downloadCsv(`collectibles-${lastReport.label}.csv`,
-          ['Week', 'Region', 'Store', 'Date', 'Name', 'Address', 'Balance'],
-          csvRows, (r) => [r.Week, r.Region, r.Store, r.Date, r.Name, r.Address, r.Balance]);
+          ['Week', 'Region', 'Store', 'Date', 'Ref. Date', 'Name', 'Address', 'Balance', 'Remarks'],
+          csvRows, (r) => [r.Week, r.Region, r.Store, r.Date, r.RefDate, r.Name, r.Address, r.Balance, r.Remarks]);
         return;
       }
       let overallTotal = 0;
@@ -397,10 +405,10 @@
         return `
           <h3>${escapeHtml(label)}</h3>
           <table>
-            <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Name</th><th>Address</th><th class="num">Balance</th></tr></thead>
+            <thead><tr><th>Region</th><th>Store</th><th>Date</th><th>Ref. Date</th><th>Name</th><th>Address</th><th class="num">Balance</th><th>Remarks</th></tr></thead>
             <tbody>
-              ${sortedRows.map((r) => `<tr><td>${escapeHtml(r.Region)}</td><td>${escapeHtml(r.Store)}</td><td>${escapeHtml(fmtDate(r.Date))}</td><td>${escapeHtml(r.Name)}</td><td>${escapeHtml(r.Address)}</td><td class="num">${escapeHtml(r.Balance)}</td></tr>`).join('')}
-              <tr class="totals-row"><td colspan="5">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td></tr>
+              ${sortedRows.map((r) => `<tr><td>${escapeHtml(r.Region)}</td><td>${escapeHtml(r.Store)}</td><td>${escapeHtml(fmtDate(r.Date))}</td><td>${r.RefDate ? escapeHtml(fmtDate(r.RefDate)) : ''}</td><td>${escapeHtml(r.Name)}</td><td>${escapeHtml(r.Address)}</td><td class="num">${escapeHtml(r.Balance)}</td><td>${escapeHtml(r.Remarks || '')}</td></tr>`).join('')}
+              <tr class="totals-row"><td colspan="6">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td><td></td></tr>
             </tbody>
           </table>
         `;
