@@ -135,6 +135,67 @@
     listContainer.innerHTML = renderWeekGroups(rowsForActiveCity());
   }
 
+  // Staff can only change Ref. Date, Remarks and Balance on an existing entry.
+  listContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cl-edit-btn');
+    if (!btn) return;
+    const row = allRows.find((r) => String(r._row) === btn.dataset.row);
+    if (row) openEdit(row);
+  });
+
+  function openEdit(row) {
+    const body = showDetailModal('Edit collectible', `
+      <form class="inv-edit-form" id="cl-edit-form">
+        <p class="panel-meta">You can change the Ref. Date, Balance and Remarks only.</p>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Collection date</span><span class="detail-value">${escapeHtml(fmtDate(row.Date)) || '\u2014'}</span></div>
+          <div class="detail-item"><span class="detail-label">Store</span><span class="detail-value">${escapeHtml(row.Store) || '\u2014'}</span></div>
+          <div class="detail-item"><span class="detail-label">Name</span><span class="detail-value">${escapeHtml(row.Name) || '\u2014'}</span></div>
+          <div class="detail-item"><span class="detail-label">Address</span><span class="detail-value">${escapeHtml(row.Address) || '\u2014'}</span></div>
+        </div>
+        <div class="form-grid" style="margin-top:12px;">
+          <div class="field"><label>Ref. Date<input name="RefDate" type="date" value="${escapeHtml(toDateKey(row.RefDate) || '')}" /></label></div>
+          <div class="field"><label>Balance<input name="Balance" type="number" step="0.01" value="${escapeHtml(row.Balance ?? '')}" /></label></div>
+          <div class="field wide"><label>Remarks<input name="Remarks" value="${escapeHtml(row.Remarks ?? '')}" /></label></div>
+        </div>
+        <p class="status-line" id="cl-edit-status"></p>
+        <div class="detail-actions">
+          <button type="submit" class="btn-secondary">Update</button>
+          <button type="button" class="refresh-btn" id="cl-edit-cancel">Cancel</button>
+        </div>
+      </form>
+    `);
+    body.querySelector('#cl-edit-cancel').addEventListener('click', closeTextModal);
+    body.querySelector('#cl-edit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const st = body.querySelector('#cl-edit-status');
+      const submit = f.querySelector('button[type="submit"]');
+      // Only these three fields are editable; everything else is sent back as it was.
+      const data = {
+        Store: row.Store, Province: row.Province, District: row.District || '', Municipality: row.Municipality,
+        Date: toDateKey(row.Date) || '', Name: row.Name, Address: row.Address,
+        Balance: f.elements['Balance'].value,
+        RefDate: f.elements['RefDate'].value,
+        Remarks: f.elements['Remarks'].value.trim()
+      };
+      submit.disabled = true;
+      st.classList.remove('error');
+      st.textContent = 'Saving\u2026';
+      try {
+        const res = await apiPost({ action: 'updateRow', sheet: 'Collectibles', region: SESSION.region, row: row._row, data });
+        if (!res.success) throw new Error(res.error);
+        closeTextModal();
+        await loadAll();
+        setStatus('Entry updated.');
+      } catch (err) {
+        submit.disabled = false;
+        st.classList.add('error');
+        st.textContent = 'Couldn\u2019t save: ' + err.message;
+      }
+    });
+  }
+
   // ---- Week grouping (Sat–Fri, same math as Rice Collection) ----
   function groupByWeek(rows) {
     const byWeek = {};
@@ -160,7 +221,8 @@
     if (!rows.length) return '<p class="empty-row">No collectibles logged yet for this city.</p>';
     const groups = groupByWeek(rows);
     let overallTotal = 0;
-    const colCount = opts.showRegion ? 4 : 3;
+    const colCount = opts.showRegion ? 5 : 4; // Region? + Date + Ref. Date + Name + Address
+    const canEdit = !opts.noEdit;
     const blocksHtml = groups.map((g) => {
       const total = sumBalances(g.rows);
       overallTotal += total;
@@ -171,10 +233,10 @@
           <div class="report-block-head"><h3>${escapeHtml(label)}</h3><span class="panel-meta">${g.rows.length} ${g.rows.length === 1 ? 'entry' : 'entries'}</span></div>
           <div class="table-scroll">
             <table class="ledger-table">
-              <thead><tr>${opts.showRegion ? '<th>Region</th>' : ''}<th>Date</th><th>Name</th><th>Address</th><th>Balance</th></tr></thead>
+              <thead><tr>${opts.showRegion ? '<th>Region</th>' : ''}<th>Date</th><th>Ref. Date</th><th>Name</th><th>Address</th><th>Balance</th><th>Remarks</th>${canEdit ? '<th></th>' : ''}</tr></thead>
               <tbody>
-                ${sortedRows.map((r) => `<tr>${opts.showRegion ? `<td><span class="region-pill">${escapeHtml(r.Region)}</span></td>` : ''}<td>${fmtDate(r.Date)}</td><td>${escapeHtml(r.Name)}</td><td>${escapeHtml(r.Address)}</td><td class="num">${escapeHtml(r.Balance)}</td></tr>`).join('')}
-                <tr class="totals-row"><td colspan="${colCount}">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td></tr>
+                ${sortedRows.map((r) => `<tr>${opts.showRegion ? `<td><span class="region-pill">${escapeHtml(r.Region)}</span></td>` : ''}<td>${fmtDate(r.Date)}</td><td>${r.RefDate ? fmtDate(r.RefDate) : '\u2014'}</td><td>${escapeHtml(r.Name)}</td><td>${escapeHtml(r.Address)}</td><td class="num">${escapeHtml(r.Balance)}</td>${remarksCellHtml(r.Remarks)}${canEdit ? `<td><button type="button" class="link-btn cl-edit-btn" data-row="${r._row}">Edit</button></td>` : ''}</tr>`).join('')}
+                <tr class="totals-row"><td colspan="${colCount}">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td><td colspan="${canEdit ? 2 : 1}"></td></tr>
               </tbody>
             </table>
           </div>
@@ -197,7 +259,9 @@
       Date: form.date.value,
       Name: form.name.value.trim(),
       Address: form.address.value.trim(),
-      Balance: form.balance.value
+      Balance: form.balance.value,
+      RefDate: form.refdate.value,
+      Remarks: form.remarks.value.trim()
     };
     setStatus('Saving…');
     try {
@@ -224,7 +288,7 @@
       if (!activeCity) { reportContainer.innerHTML = '<p class="empty-row">Pick a province and city tab above first.</p>'; return; }
       const rows = rowsForActiveCity();
       reportRangeLabel.textContent = `${activeProvince} › ${activeCity} — all entries`;
-      reportContainer.innerHTML = renderWeekGroups(rows);
+      reportContainer.innerHTML = renderWeekGroups(rows, { noEdit: true });
       lastReport = { mode: 'city', rows, label: `${activeProvince}-${activeCity}` };
     } else {
       if (!activeProvince) { reportContainer.innerHTML = '<p class="empty-row">Pick a province tab above first.</p>'; return; }
@@ -263,11 +327,11 @@
         const csvRows = [];
         groups.forEach((g) => {
           const label = g.week ? formatWeekLabel(g.week) : 'Undated';
-          g.rows.forEach((r) => csvRows.push({ Week: label, Date: fmtDate(r.Date), Name: r.Name, Address: r.Address, Balance: r.Balance }));
+          g.rows.forEach((r) => csvRows.push({ Week: label, Date: fmtDate(r.Date), RefDate: r.RefDate ? fmtDate(r.RefDate) : '', Name: r.Name, Address: r.Address, Balance: r.Balance, Remarks: r.Remarks || '' }));
         });
         downloadCsv(`collectibles-${lastReport.label}.csv`,
-          ['Week', 'Date', 'Name', 'Address', 'Balance'],
-          csvRows, (r) => [r.Week, r.Date, r.Name, r.Address, r.Balance]);
+          ['Week', 'Date', 'Ref. Date', 'Name', 'Address', 'Balance', 'Remarks'],
+          csvRows, (r) => [r.Week, r.Date, r.RefDate, r.Name, r.Address, r.Balance, r.Remarks]);
         return;
       }
       let overallTotal = 0;
@@ -279,10 +343,10 @@
         return `
           <h3>${escapeHtml(label)}</h3>
           <table>
-            <thead><tr><th>Date</th><th>Name</th><th>Address</th><th class="num">Balance</th></tr></thead>
+            <thead><tr><th>Date</th><th>Ref. Date</th><th>Name</th><th>Address</th><th class="num">Balance</th><th>Remarks</th></tr></thead>
             <tbody>
-              ${sortedRows.map((r) => `<tr><td>${escapeHtml(fmtDate(r.Date))}</td><td>${escapeHtml(r.Name)}</td><td>${escapeHtml(r.Address)}</td><td class="num">${escapeHtml(r.Balance)}</td></tr>`).join('')}
-              <tr class="totals-row"><td colspan="3">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td></tr>
+              ${sortedRows.map((r) => `<tr><td>${escapeHtml(fmtDate(r.Date))}</td><td>${r.RefDate ? escapeHtml(fmtDate(r.RefDate)) : ''}</td><td>${escapeHtml(r.Name)}</td><td>${escapeHtml(r.Address)}</td><td class="num">${escapeHtml(r.Balance)}</td><td>${escapeHtml(r.Remarks || '')}</td></tr>`).join('')}
+              <tr class="totals-row"><td colspan="4">Week total</td><td class="num">${escapeHtml(total.toFixed(2))}</td><td></td></tr>
             </tbody>
           </table>
         `;
