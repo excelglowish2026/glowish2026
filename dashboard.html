@@ -71,8 +71,13 @@
               <div class="field">
                 <label for="rp-discount">Discount</label>
                 <select id="rp-discount" name="discountPercent" required>
+                  <option value="0%">0% (no discount)</option>
                   <option value="10%">10%</option>
                   <option value="20%">20%</option>
+                  <option value="25%">25%</option>
+                  <option value="30%">30%</option>
+                  <option value="40%">40%</option>
+                  <option value="50%">50%</option>
                 </select>
               </div>
               <div class="field"><label for="rp-dp">Distributor price (auto)</label><input id="rp-dp" name="distPrice" type="number" step="0.01" readonly /></div>
@@ -221,10 +226,12 @@
           <h3>Add collection</h3>
           <div class="form-grid">
             <div class="field"><label for="clf-store">Store</label><input id="clf-store" name="store" required /></div>
-            <div class="field"><label for="clf-date">Date</label><input id="clf-date" name="date" type="date" required /></div>
+            <div class="field"><label for="clf-date">Collection date</label><input id="clf-date" name="date" type="date" required /></div>
+            <div class="field"><label for="clf-refdate">Ref. Date (original date of debt)</label><input id="clf-refdate" name="refdate" type="date" /></div>
             <div class="field wide"><label for="clf-name">Name</label><input id="clf-name" name="name" required /></div>
             <div class="field wide"><label for="clf-address">Address</label><input id="clf-address" name="address" /></div>
             <div class="field"><label for="clf-balance">Balance</label><input id="clf-balance" name="balance" type="number" step="0.01" /></div>
+            <div class="field wide"><label for="clf-remarks">Remarks</label><input id="clf-remarks" name="remarks" /></div>
           </div>
           <button type="submit" class="btn-secondary">Add collection</button>
         </form>
