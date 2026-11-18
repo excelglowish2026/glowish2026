@@ -23,7 +23,7 @@ function downloadCsv(filename, headers, rows, rowMapper) {
   URL.revokeObjectURL(url);
 }
 
-function openPrintView(title, subtitle, bodyHtml) {
+function openPrintView(title, subtitle, bodyHtml, extraCss) {
   const win = window.open('', '_blank');
   if (!win) { window.alert('Please allow pop-ups for this site to export as PDF.'); return; }
   win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(title)}</title>
@@ -37,6 +37,7 @@ function openPrintView(title, subtitle, bodyHtml) {
   td.num, th.num { text-align: right; }
   .totals-row td { font-weight: bold; background: #fafafa; }
   @media print { body { padding: 0; } }
+  ${extraCss || ''}
 </style>
 </head><body>
 <h1>${escapeHtml(title)}</h1>
