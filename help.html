@@ -99,6 +99,19 @@
             <li>A row with a <strong>Total under 10</strong> is highlighted in <span class="manual-red">red</span> &mdash; time to restock.</li>
             <li>To log stock movement: choose Category and the warehouse, enter the Item name, Beginning, In, Out and Total, plus who it went to, the address and who delivered it. Press <em>Add item</em>.</li>
             <li>If a warehouse has nothing yet, the table says <em>Empty Inventory</em>.</li>
+            <li>The list shows only <strong>Store, Date, Item name, Beg., In, Out and Total</strong> so it fits any screen. Press <em>View more</em> on a row to open a window with every detail, from Store to Remarks.</li>
+            <li>Use the <strong>search box</strong> above the table to find an item. It works in both Old and New items.</li>
+            <li data-for="sa"><strong>Editing:</strong> open <em>View more</em> and press <em>Edit</em>. You can change everything <u>except the Item name</u>. When you press <em>Update</em>, the item&rsquo;s Date automatically becomes today.</li>
+          </ul>
+        </article>
+
+        <article class="manual-section" id="m-admin-activity" data-for="ad ow">
+          <h3>Activity (staff monitoring)</h3>
+          <ul>
+            <li>The <strong>Activity</strong> tab lists the latest actions, newest first: <em>when</em>, <em>username</em>, <em>role</em>, the <em>tab</em> where it happened, and the kind of action (<span class="act-badge act-add">Add</span> <span class="act-badge act-edit">Edit</span> <span class="act-badge act-delete">Delete</span>).</li>
+            <li>Press <strong>View more</strong> to see the full record: for an Edit, each field with its <em>Before</em> and <em>After</em> value; for an Add or Delete, everything that was entered or removed.</li>
+            <li>Filter by role, username, tab or action, or type in the search box. Press <em>Refresh</em> to load new activity.</li>
+            <li>Insurance actions are logged, but their details stay hidden because that data is owner-only.</li>
           </ul>
         </article>
 
@@ -108,7 +121,8 @@
           <ol>
             <li>Click a <strong>province tab</strong> (e.g. Cebu), then a <strong>city tab</strong> under it (e.g. Mandaue).</li>
             <li>The list shows that city&rsquo;s entries grouped by <strong>collection week, Saturday to Friday</strong> (for example <em>Aug 29 &ndash; Sep 4</em>), each week with its own total, and an overall total at the bottom.</li>
-            <li>To add an entry, make sure the right province and city tabs are selected, then fill in Date, Name, Address and Balance and press <em>Add collection</em>.</li>
+            <li>To add an entry, make sure the right province and city tabs are selected, then fill in the Collection date, Ref. Date (the original date of the debt), Name, Address, Balance and Remarks, and press <em>Add collection</em>.</li>
+            <li>To fix an entry, press <em>Edit</em> on its row. Staff can change only the <strong>Ref. Date, Balance and Remarks</strong>; everything else is locked.</li>
           </ol>
           <p><strong>Generate Report</strong> (under the list):</p>
           <ul>
@@ -176,7 +190,7 @@
         <article class="manual-section" id="m-admin-collectibles" data-for="ad ow">
           <h3>Collectibles (admin)</h3>
           <ul>
-            <li>Same Province &rarr; City tabs and Saturday&ndash;Friday week grouping that staff see, but across <strong>all regions</strong>, with search and Edit/Delete on each row.</li>
+            <li>Same Province &rarr; City tabs and Saturday&ndash;Friday week grouping that staff see, but across <strong>all regions</strong>, with search and Edit/Delete on each row. Admins can edit every field, including Ref. Date and Remarks.</li>
             <li>Press <strong>+ Add city</strong> to add a new city and its province. A brand-new province gets its own tab automatically.</li>
             <li><strong>Generate Report</strong> &mdash; <em>By city</em> or <em>By province</em> (pick a month), exported as CSV or PDF.</li>
           </ul>
