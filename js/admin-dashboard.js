@@ -30,7 +30,7 @@ const TABLE_CONFIGS = {
       { key: 'Category', label: 'Category', required: true },
       { key: 'ItemName', label: 'Item name', required: true, wide: true },
       { key: 'Price', label: 'Price', type: 'number', required: true },
-      { key: 'DiscountPercent', label: 'Discount', type: 'select', options: ['10%', '20%'], required: true },
+      { key: 'DiscountPercent', label: 'Discount', type: 'select', options: ['0%', '10%', '20%', '25%', '30%', '40%', '50%'], required: true },
       {
         key: 'DistPrice', label: 'Distributor price (auto)', type: 'computed',
         computeFrom: ['Price', 'DiscountPercent'],
